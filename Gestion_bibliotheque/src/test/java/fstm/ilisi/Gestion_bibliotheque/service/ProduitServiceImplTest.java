@@ -1,0 +1,225 @@
+package fstm.ilisi.Gestion_bibliotheque.service;
+
+import fstm.ilisi.Gestion_bibliotheque.entity.Categorie;
+import fstm.ilisi.Gestion_bibliotheque.entity.Produit;
+import fstm.ilisi.Gestion_bibliotheque.repository.ProduitRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+@DisplayName("Tests du Service ProduitServiceImpl")
+class ProduitServiceImplTest {
+
+    @Mock
+    private ProduitRepository produitRepository;
+
+    @InjectMocks
+    private ProduitServiceImpl produitService;
+
+    private Produit produit1;
+    private Produit produit2;
+    private Categorie categorie;
+
+    @BeforeEach
+    void setUp() {
+        categorie = new Categorie(1L, "Electronique");
+
+        produit1 = new Produit();
+        produit1.setId(1L);
+        produit1.setNom("Smartphone");
+        produit1.setCategorie(categorie);
+        produit1.setDescription("Téléphone haut de gamme");
+        produit1.setPrix(599.99);
+        produit1.setStock(10);
+
+        produit2 = new Produit();
+        produit2.setId(2L);
+        produit2.setNom("Laptop");
+        produit2.setCategorie(categorie);
+        produit2.setDescription("PC portable");
+        produit2.setPrix(899.99);
+        produit2.setStock(5);
+    }
+
+    // ==================== Tests searchProduits ====================
+
+    @Test
+    @DisplayName("searchProduits - Retourne une page de produits")
+    void testSearchProduits() {
+        List<Produit> produits = Arrays.asList(produit1, produit2);
+        Page<Produit> expectedPage = new PageImpl<>(produits);
+        when(produitRepository.searchProduits(eq("Smart"), any(PageRequest.class))).thenReturn(expectedPage);
+
+        Page<Produit> result = produitService.searchProduits("Smart", 0, 5);
+
+        assertEquals(2, result.getContent().size());
+        verify(produitRepository).searchProduits(eq("Smart"), any(PageRequest.class));
+    }
+
+    @Test
+    @DisplayName("searchProduits - Retourne une page vide")
+    void testSearchProduits_Empty() {
+        Page<Produit> emptyPage = new PageImpl<>(List.of());
+        when(produitRepository.searchProduits(eq("xyz"), any(PageRequest.class))).thenReturn(emptyPage);
+
+        Page<Produit> result = produitService.searchProduits("xyz", 0, 5);
+
+        assertTrue(result.getContent().isEmpty());
+    }
+
+    // ==================== Tests getProduitById ====================
+
+    @Test
+    @DisplayName("getProduitById - Retourne le produit trouvé")
+    void testGetProduitById_Found() {
+        when(produitRepository.findById(1L)).thenReturn(Optional.of(produit1));
+
+        Produit result = produitService.getProduitById(1L);
+
+        assertNotNull(result);
+        assertEquals("Smartphone", result.getNom());
+        assertEquals(599.99, result.getPrix());
+    }
+
+    @Test
+    @DisplayName("getProduitById - Lève une exception si non trouvé")
+    void testGetProduitById_NotFound() {
+        when(produitRepository.findById(99L)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> produitService.getProduitById(99L));
+
+        assertTrue(exception.getMessage().contains("Produit non trouvé"));
+    }
+
+    // ==================== Tests saveProduit ====================
+
+    @Test
+    @DisplayName("saveProduit - Sauvegarde réussie")
+    void testSaveProduit_Success() {
+        when(produitRepository.save(produit1)).thenReturn(produit1);
+
+        Produit result = produitService.saveProduit(produit1);
+
+        assertNotNull(result);
+        assertEquals("Smartphone", result.getNom());
+        verify(produitRepository).save(produit1);
+    }
+
+    @Test
+    @DisplayName("saveProduit - Échec si le nom est vide")
+    void testSaveProduit_EmptyName() {
+        Produit invalidProduit = new Produit();
+        invalidProduit.setNom("");
+        invalidProduit.setPrix(10.0);
+        invalidProduit.setStock(5);
+
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> produitService.saveProduit(invalidProduit));
+
+        assertEquals("Le nom du produit ne peut pas être vide", exception.getMessage());
+        verify(produitRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("saveProduit - Échec si le nom est null")
+    void testSaveProduit_NullName() {
+        Produit invalidProduit = new Produit();
+        invalidProduit.setNom(null);
+        invalidProduit.setPrix(10.0);
+        invalidProduit.setStock(5);
+
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> produitService.saveProduit(invalidProduit));
+
+        assertEquals("Le nom du produit ne peut pas être vide", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("saveProduit - Échec si le prix est négatif")
+    void testSaveProduit_NegativePrice() {
+        Produit invalidProduit = new Produit();
+        invalidProduit.setNom("Test");
+        invalidProduit.setPrix(-10.0);
+        invalidProduit.setStock(5);
+
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> produitService.saveProduit(invalidProduit));
+
+        assertEquals("Le prix ne peut pas être négatif", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("saveProduit - Échec si le stock est négatif")
+    void testSaveProduit_NegativeStock() {
+        Produit invalidProduit = new Produit();
+        invalidProduit.setNom("Test");
+        invalidProduit.setPrix(10.0);
+        invalidProduit.setStock(-1);
+
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> produitService.saveProduit(invalidProduit));
+
+        assertEquals("Le stock ne peut pas être négatif", exception.getMessage());
+    }
+
+    // ==================== Tests deleteProduit ====================
+
+    @Test
+    @DisplayName("deleteProduit - Suppression réussie")
+    void testDeleteProduit_Success() {
+        when(produitRepository.existsById(1L)).thenReturn(true);
+        doNothing().when(produitRepository).deleteById(1L);
+
+        assertDoesNotThrow(() -> produitService.deleteProduit(1L));
+
+        verify(produitRepository).deleteById(1L);
+    }
+
+    @Test
+    @DisplayName("deleteProduit - Échec si le produit n'existe pas")
+    void testDeleteProduit_NotFound() {
+        when(produitRepository.existsById(99L)).thenReturn(false);
+
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> produitService.deleteProduit(99L));
+
+        assertTrue(exception.getMessage().contains("Produit non trouvé"));
+        verify(produitRepository, never()).deleteById(any());
+    }
+
+    // ==================== Tests produitExists ====================
+
+    @Test
+    @DisplayName("produitExists - Retourne true si le produit existe")
+    void testProduitExists_True() {
+        when(produitRepository.existsById(1L)).thenReturn(true);
+
+        assertTrue(produitService.produitExists(1L));
+    }
+
+    @Test
+    @DisplayName("produitExists - Retourne false si le produit n'existe pas")
+    void testProduitExists_False() {
+        when(produitRepository.existsById(99L)).thenReturn(false);
+
+        assertFalse(produitService.produitExists(99L));
+    }
+}

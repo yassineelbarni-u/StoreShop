@@ -15,5 +15,4 @@ public class AppRole {
     @Id
     private String roleName;
 
-    
 }

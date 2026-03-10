@@ -142,7 +142,7 @@ class ProduitControllerTest {
     @Test
     @DisplayName("Test saveProduit")
     void testSaveProduit() {
-
+        
         // Arrange
         when(categorieService.getCategorieById(1L)).thenReturn(categorie1);
         when(produitService.saveProduit(any(Produit.class))).thenReturn(produit1);
