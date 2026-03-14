@@ -9,73 +9,127 @@
     <script th:src="@{/webjars/bootstrap/5.3.8/js/bootstrap.bundle.min.js}"></script>
 </head>
 <body>
-    <div th:insert="~{template1 :: navbar}"></div>
 
-    <div class="container mt-5">
-        <div class="row mb-4">
-            <div class="col">
-                <h1 class="display-4">🎯 Dashboard Administrateur</h1>
-                <p class="lead">Bienvenue <strong sec:authentication="name">Admin</strong> - Gérez votre application</p>
+<div class="admin-shell">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="admin-sidebar" id="sidebar">
+
+        <!-- Brand -->
+        <div class="sidebar-brand">
+            <div class="brand-icon">🛒</div>
+            <div>
+                <div class="brand-text">StoreAdmin</div>
+                <div class="brand-sub">Back Office</div>
             </div>
         </div>
 
-        <div class="row g-4">
-            <div class="col-md-6">
-                <div class="card dashboard-card" onclick="window.location.href='/admin/produits'">
-                    <div class="card-body text-center p-5">
-                        <div class="icon-large text-primary">📚</div>
-                        <h3 class="card-title">Gestion des Produits</h3>
-                        <p class="card-text text-muted">
-                            Ajouter, modifier ou supprimer des produits de Store shop
-                        </p>
-                        <a th:href="@{/admin/produits}" class="btn btn-primary btn-lg mt-3">
-                            Accéder <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Gestion des Utilisateurs -->
-            <div class="col-md-6">
-                <div class="card dashboard-card" onclick="window.location.href='/admin/users'">
-                    <div class="card-body text-center p-5">
-                        <div class="icon-large text-success">👥</div>
-                        <h3 class="card-title">Gestion des Utilisateurs</h3>
-                        <p class="card-text text-muted">
-                            Gérer les comptes utilisateurs et leurs rôles
-                        </p>
-                        <a th:href="@{/admin/users}" class="btn btn-success btn-lg mt-3">
-                            Accéder <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Gestion des Catégories -->
-            <div class="col-md-6">
-                <div class="card dashboard-card" onclick="window.location.href='/admin/categories'">
-                    <div class="card-body text-center p-5">
-                        <div class="icon-large text-warning">📂</div>
-                        <h3 class="card-title">Gestion des Catégories</h3>
-                        <p class="card-text text-muted">
-                            Ajouter, modifier ou supprimer des catégories de produits
-                        </p>
-                        <a th:href="@{/admin/categories}" class="btn btn-warning btn-lg mt-3">
-                            Accéder <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
+        <!-- User Info -->
+        <div class="sidebar-user">
+            <div class="user-avatar" sec:authentication="name" th:text="${#strings.substring(#authentication.name, 0, 2).toUpperCase()}">AD</div>
+            <div>
+                <div class="user-name" sec:authentication="name">Admin</div>
+                <div class="user-role">Administrateur</div>
             </div>
         </div>
 
-        <div class="row mt-5">
-            <div class="col-md-12">
-                <div class="alert alert-info">
-                    <h5>📊 Informations Système</h5>
-                    <p class="mb-0">Vous êtes connecté en tant qu'administrateur avec tous les privilèges.</p>
+        <!-- Navigation -->
+        <nav class="sidebar-nav">
+            <div class="sidebar-section-label">Principal</div>
+            <a th:href="@{/admin/dashboard}" class="nav-item active">
+                <span class="nav-icon">🏠</span> Tableau de bord
+            </a>
+
+            <div class="sidebar-section-label">Catalogue</div>
+            <a th:href="@{/admin/produits}" class="nav-item">
+                <span class="nav-icon">📦</span> Produits
+            </a>
+            <a th:href="@{/admin/categories}" class="nav-item">
+                <span class="nav-icon">📂</span> Catégories
+            </a>
+
+            <div class="sidebar-section-label">Gestion</div>
+            <a th:href="@{/admin/users}" class="nav-item">
+                <span class="nav-icon">👥</span> Utilisateurs
+            </a>
+        </nav>
+
+        <!-- Logout -->
+        <div class="sidebar-footer">
+            <form th:action="@{/logout}" method="post" style="margin:0;">
+                <button type="submit" class="nav-item" style="width:100%;border:none;background:none;text-align:left;cursor:pointer;">
+                    <span class="nav-icon">🔓</span> Déconnexion
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <div class="admin-main">
+
+        <!-- Topbar -->
+        <header class="admin-topbar">
+            <div>
+                <div class="topbar-title">Tableau de bord</div>
+                <div class="topbar-breadcrumb">
+                    <span>Accueil</span> › Dashboard
                 </div>
             </div>
-        </div>
+        </header>
+
+        <!-- Content -->
+        <main class="admin-content">
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-header-left">
+                    <h1>Bonjour, <span sec:authentication="name">Admin</span> 👋</h1>
+                    <p>Gérez votre boutique depuis ce panneau d'administration.</p>
+                </div>
+            </div>
+
+            <!-- Quick Access Cards -->
+            <div class="menu-grid">
+                <!-- Produits -->
+                <a th:href="@{/admin/produits}" class="menu-card">
+                    <div class="menu-card-icon blue">📦</div>
+                    <div class="menu-card-info">
+                        <h3>Gestion des Produits</h3>
+                        <p>Ajouter, modifier ou supprimer des produits</p>
+                    </div>
+                    <span class="menu-card-arrow">›</span>
+                </a>
+
+                <!-- Utilisateurs -->
+                <a th:href="@{/admin/users}" class="menu-card">
+                    <div class="menu-card-icon green">👥</div>
+                    <div class="menu-card-info">
+                        <h3>Gestion des Utilisateurs</h3>
+                        <p>Gérer les comptes et leurs rôles</p>
+                    </div>
+                    <span class="menu-card-arrow">›</span>
+                </a>
+
+                <!-- Catégories -->
+                <a th:href="@{/admin/categories}" class="menu-card">
+                    <div class="menu-card-icon amber">📂</div>
+                    <div class="menu-card-info">
+                        <h3>Gestion des Catégories</h3>
+                        <p>Organiser les catégories de produits</p>
+                    </div>
+                    <span class="menu-card-arrow">›</span>
+                </a>
+            </div>
+
+            <!-- Info Banner -->
+            <div class="info-panel">
+                <span class="info-icon">🔒</span>
+                <p>Vous êtes connecté en tant qu'administrateur avec tous les privilèges système.</p>
+            </div>
+
+        </main>
     </div>
+</div>
+
 </body>
 </html>

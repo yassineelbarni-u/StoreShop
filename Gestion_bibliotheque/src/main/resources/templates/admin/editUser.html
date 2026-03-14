@@ -1,70 +1,146 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Modifier un Utilisateur</title>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.8/css/bootstrap.min.css}" />
-    <link rel="stylesheet" th:href="@{/css/user-management.css}" />
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
     <script th:src="@{/webjars/bootstrap/5.3.8/js/bootstrap.bundle.min.js}"></script>
 </head>
 <body>
-    <div th:insert="~{template1 :: navbar}"></div>
 
-    <div class="container mt-4">
-        <div class="card">
-            <div class="card-header bg-warning">
-                <h2 class="mb-0">✏️ Modifier l'Utilisateur</h2>
+<div class="admin-shell">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="admin-sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">🛒</div>
+            <div>
+                <div class="brand-text">StoreAdmin</div>
+                <div class="brand-sub">Back Office</div>
             </div>
-            <div class="card-body">
-                <form method="post" th:action="@{/admin/users/edit}">
-                    <input type="hidden" name="userId" th:value="${user.userId}">
+        </div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Nom d'utilisateur *</label>
-                                <input type="text" class="form-control" id="username" name="username" 
+        <div class="sidebar-user">
+            <div class="user-avatar" sec:authentication="name" th:text="${#strings.substring(#authentication.name, 0, 2).toUpperCase()}">AD</div>
+            <div>
+                <div class="user-name" sec:authentication="name">Admin</div>
+                <div class="user-role">Administrateur</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section-label">Principal</div>
+            <a th:href="@{/admin/dashboard}" class="nav-item">
+                <span class="nav-icon">🏠</span> Tableau de bord
+            </a>
+
+            <div class="sidebar-section-label">Catalogue</div>
+            <a th:href="@{/admin/produits}" class="nav-item">
+                <span class="nav-icon">📦</span> Produits
+            </a>
+            <a th:href="@{/admin/categories}" class="nav-item">
+                <span class="nav-icon">📂</span> Catégories
+            </a>
+
+            <div class="sidebar-section-label">Gestion</div>
+            <a th:href="@{/admin/users}" class="nav-item active">
+                <span class="nav-icon">👥</span> Utilisateurs
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <form th:action="@{/logout}" method="post" style="margin:0;">
+                <button type="submit" class="nav-item" style="width:100%;border:none;background:none;text-align:left;cursor:pointer;">
+                    <span class="nav-icon">🔓</span> Déconnexion
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <div class="admin-main">
+
+        <header class="admin-topbar">
+            <div>
+                <div class="topbar-title">Modifier l'utilisateur</div>
+                <div class="topbar-breadcrumb">
+                    <a th:href="@{/admin/dashboard}" style="color:inherit;text-decoration:none;">Accueil</a>
+                    › <a th:href="@{/admin/users}" style="color:inherit;text-decoration:none;">Utilisateurs</a>
+                    › Modifier
+                </div>
+            </div>
+        </header>
+
+        <main class="admin-content">
+
+            <div class="page-header">
+                <div class="page-header-left">
+                    <h1>Modifier l'Utilisateur</h1>
+                    <p>Mettre à jour les informations et les rôles du compte</p>
+                </div>
+                <div class="page-header-right">
+                    <a th:href="@{/admin/users}" class="btn-ghost">← Retour</a>
+                </div>
+            </div>
+
+            <div class="panel" style="max-width:680px;">
+                <div class="panel-header">
+                    <h2>✏️ Modification du compte</h2>
+                </div>
+                <div class="panel-body">
+                    <form method="post" th:action="@{/admin/users/edit}">
+                        <input type="hidden" name="userId" th:value="${user.userId}">
+
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                            <div>
+                                <label for="username" class="form-label-custom">Nom d'utilisateur *</label>
+                                <input type="text" class="form-control-custom" id="username" name="username"
                                        th:value="${user.username}" required>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email *</label>
-                                <input type="email" class="form-control" id="email" name="email" 
+                            <div>
+                                <label for="email" class="form-label-custom">Email *</label>
+                                <input type="email" class="form-control-custom" id="email" name="email"
                                        th:value="${user.email}" required>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Nouveau mot de passe</label>
-                        <input type="password" class="form-control" id="password" name="password">
-                        <small class="form-text text-muted">Laissez vide pour conserver le mot de passe actuel</small>
-                    </div>
+                        <div style="margin-bottom:20px;">
+                            <label for="password" class="form-label-custom">Nouveau mot de passe</label>
+                            <input type="password" class="form-control-custom" id="password" name="password" placeholder="Laisser vide pour conserver">
+                            <p class="form-hint">⚠️ Laissez vide pour conserver le mot de passe actuel.</p>
+                        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Rôles</label>
-                        <div th:each="role : ${allRoles}">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="roles" 
-                                       th:value="${role.roleName}" 
-                                       th:id="${'role_' + role.roleName}"
-                                       th:checked="${user.roles.contains(role)}">
-                                <label class="form-check-label" th:for="${'role_' + role.roleName}">
-                                    <span th:class="${role.roleName == 'ADMIN' ? 'badge bg-danger' : 'badge bg-primary'}"
-                                          th:text="${role.roleName}"></span>
-                                </label>
+                        <div style="margin-bottom:24px;">
+                            <label class="form-label-custom">Rôles attribués</label>
+                            <div style="background:var(--bg-surface2);border-radius:var(--radius-sm);border:1px solid var(--border);overflow:hidden;">
+                                <div th:each="role : ${allRoles}" class="form-check-custom">
+                                    <input class="form-check-input" type="checkbox" name="roles"
+                                           th:value="${role.roleName}"
+                                           th:id="${'role_' + role.roleName}"
+                                           th:checked="${user.roles.contains(role)}"
+                                           style="width:16px;height:16px;accent-color:var(--accent);">
+                                    <label th:for="${'role_' + role.roleName}" style="cursor:pointer;display:flex;align-items:center;gap:8px;font-size:13px;">
+                                        <span th:class="${role.roleName == 'ADMIN' ? 'badge-role admin' : 'badge-role user'}"
+                                              th:text="${role.roleName}"></span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-warning">💾 Enregistrer</button>
-                        <a th:href="@{/admin/users}" class="btn btn-secondary">🚫 Annuler</a>
-                    </div>
-                </form>
+                        <div style="display:flex;gap:10px;">
+                            <button type="submit" class="btn-icon save">💾 Enregistrer</button>
+                            <a th:href="@{/admin/users}" class="btn-ghost">Annuler</a>
+                        </div>
+
+                    </form>
+                </div>
             </div>
-        </div>
+
+        </main>
     </div>
+</div>
+
 </body>
 </html>
