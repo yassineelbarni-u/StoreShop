@@ -39,7 +39,7 @@ class ProduitServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        categorie = new Categorie(1L, "Electronique");
+        categorie = new Categorie(1L, "Electronique", null);
 
         produit1 = new Produit();
         produit1.setId(1L);

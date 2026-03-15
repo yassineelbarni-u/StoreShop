@@ -15,7 +15,7 @@ public class GestionBibliothequeApplication {
 	}
 
 	@Bean
-	CommandLineRunner CommandeLineRunnerDetails(AccountService accountService) { 
+	CommandLineRunner CommandeLineRunnerDetails(AccountService accountService) {
 		return args -> {
 			// Créer les rôles uniquement s'ils n'existent pas
 			accountService.ensureRoleExists("USER");

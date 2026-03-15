@@ -6,81 +6,26 @@
     <title>Ajouter un Utilisateur</title>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.8/css/bootstrap.min.css}" />
     <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
-    <script th:src="@{/webjars/bootstrap/5.3.8/js/bootstrap.bundle.min.js}"></script>
 </head>
 <body>
-
 <div class="admin-shell">
 
-    <!-- ===== SIDEBAR ===== -->
-    <aside class="admin-sidebar" id="sidebar">
-        <div class="sidebar-brand">
-            <div class="brand-icon">🛒</div>
-            <div>
-                <div class="brand-text">StoreAdmin</div>
-                <div class="brand-sub">Back Office</div>
-            </div>
-        </div>
+    <div th:insert="~{adminLayout :: sidebar('users')}"></div>
 
-        <div class="sidebar-user">
-            <div class="user-avatar" sec:authentication="name" th:text="${#strings.substring(#authentication.name, 0, 2).toUpperCase()}">AD</div>
-            <div>
-                <div class="user-name" sec:authentication="name">Admin</div>
-                <div class="user-role">Administrateur</div>
-            </div>
-        </div>
-
-        <nav class="sidebar-nav">
-            <div class="sidebar-section-label">Principal</div>
-            <a th:href="@{/admin/dashboard}" class="nav-item">
-                <span class="nav-icon">🏠</span> Tableau de bord
-            </a>
-
-            <div class="sidebar-section-label">Catalogue</div>
-            <a th:href="@{/admin/produits}" class="nav-item">
-                <span class="nav-icon">📦</span> Produits
-            </a>
-            <a th:href="@{/admin/categories}" class="nav-item">
-                <span class="nav-icon">📂</span> Catégories
-            </a>
-
-            <div class="sidebar-section-label">Gestion</div>
-            <a th:href="@{/admin/users}" class="nav-item active">
-                <span class="nav-icon">👥</span> Utilisateurs
-            </a>
-        </nav>
-
-        <div class="sidebar-footer">
-            <form th:action="@{/logout}" method="post" style="margin:0;">
-                <button type="submit" class="nav-item" style="width:100%;border:none;background:none;text-align:left;cursor:pointer;">
-                    <span class="nav-icon">🔓</span> Déconnexion
-                </button>
-            </form>
-        </div>
-    </aside>
-
-    <!-- ===== MAIN ===== -->
     <div class="admin-main">
-
         <header class="admin-topbar">
             <div>
                 <div class="topbar-title">Nouvel utilisateur</div>
                 <div class="topbar-breadcrumb">
-                    <a th:href="@{/admin/dashboard}" style="color:inherit;text-decoration:none;">Accueil</a>
-                    › <a th:href="@{/admin/users}" style="color:inherit;text-decoration:none;">Utilisateurs</a>
-                    › Ajouter
+                    <a th:href="@{/admin/users}" style="color:inherit;text-decoration:none;">Utilisateurs</a> › Ajouter
                 </div>
             </div>
         </header>
-
         <main class="admin-content">
-
             <div th:if="${param.error}" class="alert-custom danger">
-                <span>⚠️</span>
-                <span th:text="${param.error}"></span>
+                <span>⚠️</span><span th:text="${param.error}"></span>
                 <button class="alert-close" onclick="this.parentElement.remove()">×</button>
             </div>
-
             <div class="page-header">
                 <div class="page-header-left">
                     <h1>Ajouter un Utilisateur</h1>
@@ -92,62 +37,49 @@
             </div>
 
             <div class="panel" style="max-width:680px;">
-                <div class="panel-header">
-                    <h2>➕ Informations du compte</h2>
-                </div>
+                <div class="panel-header"><h2>➕ Informations du compte</h2></div>
                 <div class="panel-body">
                     <form method="post" th:action="@{/admin/users/add}">
-
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
                             <div>
                                 <label for="username" class="form-label-custom">Nom d'utilisateur *</label>
-                                <input type="text" class="form-control-custom" id="username" name="username" placeholder="ex: john_doe" required>
+                                <input type="text" class="form-control-custom" id="username" name="username" placeholder="yassine " required>
                             </div>
                             <div>
                                 <label for="email" class="form-label-custom">Email *</label>
-                                <input type="email" class="form-control-custom" id="email" name="email" placeholder="ex: john@mail.com" required>
+                                <input type="email" class="form-control-custom" id="email" name="email" placeholder="ex: yassine@mail.com" required>
                             </div>
                         </div>
-
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
                             <div>
                                 <label for="password" class="form-label-custom">Mot de passe *</label>
-                                <input type="password" class="form-control-custom" id="password" name="password" placeholder="••••••••" required>
+                                <input type="password" class="form-control-custom" id="password" name="password" placeholder="********" required>
                             </div>
                             <div>
-                                <label for="confirmPassword" class="form-label-custom">Confirmer le mot de passe *</label>
-                                <input type="password" class="form-control-custom" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required>
+                                <label for="confirmPassword" class="form-label-custom">Confirmer *</label>
+                                <input type="password" class="form-control-custom" id="confirmPassword" name="confirmPassword" placeholder="********" required>
                             </div>
                         </div>
-
                         <div style="margin-bottom:24px;">
-                            <label class="form-label-custom">Rôles attribués</label>
+                            <label class="form-label-custom">Rôles</label>
                             <div style="background:var(--bg-surface2);border-radius:var(--radius-sm);border:1px solid var(--border);overflow:hidden;">
                                 <div th:each="role : ${roles}" class="form-check-custom">
-                                    <input class="form-check-input" type="checkbox" name="roles"
-                                           th:value="${role.roleName}"
-                                           th:id="${'role_' + role.roleName}"
-                                           style="width:16px;height:16px;accent-color:var(--accent);">
-                                    <label th:for="${'role_' + role.roleName}" style="cursor:pointer;display:flex;align-items:center;gap:8px;font-size:13px;">
-                                        <span th:class="${role.roleName == 'ADMIN' ? 'badge-role admin' : 'badge-role user'}"
-                                              th:text="${role.roleName}"></span>
+                                    <input type="checkbox" name="roles" th:value="${role.roleName}" th:id="${'role_' + role.roleName}" style="width:16px;height:16px;accent-color:var(--accent);">
+                                    <label th:for="${'role_' + role.roleName}" style="cursor:pointer;">
+                                        <span th:class="${role.roleName == 'ADMIN'} ? 'badge-role admin' : 'badge-role user'" th:text="${role.roleName}"></span>
                                     </label>
                                 </div>
                             </div>
                         </div>
-
                         <div style="display:flex;gap:10px;">
                             <button type="submit" class="btn-icon save">💾 Enregistrer</button>
                             <a th:href="@{/admin/users}" class="btn-ghost">Annuler</a>
                         </div>
-
                     </form>
                 </div>
             </div>
-
         </main>
     </div>
 </div>
-
 </body>
 </html>

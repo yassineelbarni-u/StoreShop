@@ -43,8 +43,8 @@ class CategorieControllerTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(categorieController).build();
-        categorie1 = new Categorie(1L, "Electronique");
-        categorie2 = new Categorie(2L, "Informatique");
+        categorie1 = new Categorie(1L, "Electronique", null);
+        categorie2 = new Categorie(2L, "Informatique", null);
     }
 
 
@@ -93,8 +93,8 @@ class CategorieControllerTest {
     @Test
     @DisplayName("Test addCategorie - Ajout réussi")
     void testAddCategorie_Success() {
-        Categorie newCategorie = new Categorie(null, "Livres");
-        when(categorieService.saveCategorie(newCategorie)).thenReturn(new Categorie(3L, "Livres"));
+        Categorie newCategorie = new Categorie(null, "Livres", null);
+        when(categorieService.saveCategorie(newCategorie)).thenReturn(new Categorie(3L, "Livres", null));
 
         String redirect = categorieController.addCategorie(newCategorie);
 
@@ -105,7 +105,7 @@ class CategorieControllerTest {
     @Test
     @DisplayName("Test addCategorie - Échec avec erreur")
     void testAddCategorie_Error() {
-        Categorie duplicate = new Categorie(null, "Electronique");
+        Categorie duplicate = new Categorie(null, "Electronique", null);
         when(categorieService.saveCategorie(duplicate))
                 .thenThrow(new RuntimeException("Une catégorie avec ce nom existe déjà"));
 
@@ -140,7 +140,7 @@ class CategorieControllerTest {
     @Test
     @DisplayName("Test editCategorie - Modification réussie")
     void testEditCategorie_Success() {
-        Categorie updated = new Categorie(1L, "Electronique Modifiée");
+        Categorie updated = new Categorie(1L, "Electronique Modifiée", null);
         when(categorieService.saveCategorie(updated)).thenReturn(updated);
 
         String redirect = categorieController.editCategorie(updated);
@@ -152,7 +152,7 @@ class CategorieControllerTest {
     @Test
     @DisplayName("Test editCategorie - Echec avec erreur")
     void testEditCategorie_Error() {
-        Categorie invalid = new Categorie(1L, "");
+        Categorie invalid = new Categorie(1L, "", null);
         when(categorieService.saveCategorie(invalid))
                 .thenThrow(new RuntimeException("Le nom de la catégorie ne peut pas être vide"));
 

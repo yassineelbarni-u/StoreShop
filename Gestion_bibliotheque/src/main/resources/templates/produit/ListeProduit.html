@@ -9,125 +9,56 @@
     <script th:src="@{/webjars/bootstrap/5.3.8/js/bootstrap.bundle.min.js}"></script>
 </head>
 <body>
-
 <div class="admin-shell">
 
-    <!-- ===== SIDEBAR ===== -->
-    <aside class="admin-sidebar">
-        <div class="sidebar-brand">
-            <div class="brand-icon">🛒</div>
-            <div>
-                <div class="brand-text">StoreAdmin</div>
-                <div class="brand-sub">Back Office</div>
-            </div>
-        </div>
+    <div th:insert="~{adminLayout :: sidebar('produits')}"></div>
 
-        <div class="sidebar-user">
-            <div class="user-avatar"
-                 th:text="${#strings.substring(#authentication.name, 0, 2).toUpperCase()}">AD</div>
-            <div>
-                <div class="user-name" sec:authentication="name">Admin</div>
-                <div class="user-role">Administrateur</div>
-            </div>
-        </div>
-
-        <nav class="sidebar-nav">
-            <div class="sidebar-section-label">Principal</div>
-            <a th:href="@{/admin/dashboard}" class="nav-item">
-                <span class="nav-icon">🏠</span> Tableau de bord
-            </a>
-
-            <div class="sidebar-section-label">Catalogue</div>
-            <a th:href="@{/admin/produits}" class="nav-item active">
-                <span class="nav-icon">📦</span> Produits
-            </a>
-            <a th:href="@{/admin/categories}" class="nav-item">
-                <span class="nav-icon">📂</span> Catégories
-            </a>
-
-            <div class="sidebar-section-label">Gestion</div>
-            <a th:href="@{/admin/users}" class="nav-item">
-                <span class="nav-icon">👥</span> Utilisateurs
-            </a>
-        </nav>
-
-        <div class="sidebar-footer">
-            <form th:action="@{/logout}" method="post" style="margin:0;">
-                <button type="submit" class="nav-item"
-                        style="width:100%;border:none;background:none;text-align:left;cursor:pointer;">
-                    <span class="nav-icon">🔓</span> Déconnexion
-                </button>
-            </form>
-        </div>
-    </aside>
-
-    <!-- ===== MAIN ===== -->
     <div class="admin-main">
-
         <header class="admin-topbar">
             <div>
                 <div class="topbar-title">Produits</div>
                 <div class="topbar-breadcrumb">
-                    <a th:href="@{/admin/dashboard}" style="color:inherit;text-decoration:none;">Accueil</a>
-                    › Produits
+                    <a th:href="@{/admin/dashboard}" style="color:inherit;text-decoration:none;">Accueil</a> › Produits
                 </div>
             </div>
             <div class="topbar-actions">
-                <a sec:authorize="hasRole('ADMIN')"
-                   th:href="@{/admin/produits/add(search=${search})}"
-                   class="btn-primary-custom">＋ Ajouter</a>
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/produits/add(search=${search})}" class="btn-primary-custom">＋ Ajouter</a>
             </div>
         </header>
-
         <main class="admin-content">
-
-            <!-- Page Header -->
             <div class="page-header">
                 <div class="page-header-left">
                     <h1>Gestion des Produits</h1>
                     <p>Liste complète des produits du catalogue</p>
                 </div>
                 <div class="page-header-right">
-                    <a sec:authorize="hasRole('ADMIN')"
-                       th:href="@{/admin/produits/add(search=${search})}"
-                       class="btn-primary-custom">＋ Nouveau produit</a>
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/produits/add(search=${search})}" class="btn-primary-custom">＋ Nouveau produit</a>
                     <a th:href="@{/admin/dashboard}" class="btn-ghost">← Dashboard</a>
                 </div>
             </div>
 
-            <!-- Search Bar -->
+            <!-- Search -->
             <div class="panel" style="margin-bottom:16px;">
                 <div class="panel-body" style="padding:14px 20px;">
                     <form method="get" th:action="@{/admin/produits}">
                         <div style="display:flex;gap:10px;align-items:center;">
-                            <input type="text" name="search" th:value="${search}"
-                                   class="form-control-custom"
-                                   placeholder="🔍  Rechercher un produit par nom..."
-                                   style="flex:1;">
+                            <input type="text" name="search" th:value="${search}" class="form-control-custom"
+                                   placeholder="🔍  Rechercher un produit..." style="flex:1;">
                             <button type="submit" class="btn-primary-custom">Rechercher</button>
-                            <a th:if="${search != null and !search.isEmpty()}"
-                               th:href="@{/admin/produits}"
-                               class="btn-ghost">✕ Effacer</a>
+                            <a th:if="${search != null and !search.isEmpty()}" th:href="@{/admin/produits}" class="btn-ghost">✕ Effacer</a>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <!-- Table Panel -->
+            <!-- Table -->
             <div class="panel">
-                <div class="panel-header">
-                    <h2>📦 Catalogue produits</h2>
-                </div>
+                <div class="panel-header"><h2>📦 Catalogue produits</h2></div>
                 <div style="overflow-x:auto;">
                     <table class="admin-table">
                         <thead>
                             <tr>
-                                <th>Image</th>
-                                <th>Nom</th>
-                                <th>Catégorie</th>
-                                <th>Description</th>
-                                <th>Prix</th>
-                                <th>Stock</th>
+                                <th>Image</th><th>Nom</th><th>Catégorie</th><th>Description</th><th>Prix</th><th>Stock</th>
                                 <th sec:authorize="hasRole('ADMIN')">Actions</th>
                             </tr>
                         </thead>
@@ -135,46 +66,28 @@
                             <tr th:each="produit : ${ListeProduit}">
                                 <td>
                                     <img th:if="${produit.imageUrl != null and !produit.imageUrl.isEmpty()}"
-                                         th:src="${produit.imageUrl}"
-                                         alt="Image produit"
+                                         th:src="@{${produit.imageUrl}}" alt="img"
                                          style="width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid var(--border);">
                                     <div th:unless="${produit.imageUrl != null and !produit.imageUrl.isEmpty()}"
-                                         style="width:44px;height:44px;border-radius:8px;background:var(--bg-surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;">
-                                        📦
-                                    </div>
+                                         style="width:44px;height:44px;border-radius:8px;background:var(--bg-surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;">📦</div>
                                 </td>
+                                <td><strong th:text="${produit.nom}"></strong></td>
                                 <td>
-                                    <strong th:text="${produit.nom}"></strong>
+                                    <span th:if="${produit.categorie != null}" class="badge-role user" th:text="${produit.categorie.nom}"></span>
+                                    <span th:unless="${produit.categorie != null}" style="font-size:11px;color:#a0aec0;">—</span>
                                 </td>
+                                <td style="color:var(--text-secondary);max-width:200px;">
+                                    <span th:text="${#strings.abbreviate(produit.description, 55)}"></span>
+                                </td>
+                                <td><strong th:text="${produit.prix} + ' €'"></strong></td>
                                 <td>
-                                    <span th:if="${produit.categorie != null}"
-                                          style="display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:#eef0fd;color:#4361ee;"
-                                          th:text="${produit.categorie.nom}"></span>
-                                    <span th:unless="${produit.categorie != null}"
-                                          style="display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f1f1;color:#718096;">
-                                        Sans catégorie
-                                    </span>
-                                </td>
-                                <td style="color:var(--text-secondary);max-width:220px;">
-                                    <span th:text="${#strings.abbreviate(produit.description, 60)}"></span>
-                                </td>
-                                <td>
-                                    <span style="font-weight:600;color:var(--text-primary);"
-                                          th:text="${produit.prix} + ' €'"></span>
-                                </td>
-                                <td>
-                                    <span th:if="${produit.stock > 10}"
-                                          style="display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:#ecfdf5;color:#059669;"
-                                          th:text="${produit.stock}"></span>
-                                    <span th:unless="${produit.stock > 10}"
-                                          style="display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:#fffbeb;color:#d97706;"
-                                          th:text="${produit.stock}"></span>
+                                    <span th:if="${produit.stock > 10}" style="display:inline-flex;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:#ecfdf5;color:#059669;" th:text="${produit.stock}"></span>
+                                    <span th:unless="${produit.stock > 10}" style="display:inline-flex;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:#fffbeb;color:#d97706;" th:text="${produit.stock}"></span>
                                 </td>
                                 <td sec:authorize="hasRole('ADMIN')">
                                     <div style="display:flex;gap:6px;">
-                                        <a th:href="@{/admin/produits/edit(id=${produit.id}, search=${search})}"
-                                           class="btn-icon edit">✏️ Modifier</a>
-                                        <a onclick="return confirm('Vous êtes sûr de vouloir supprimer ce produit ?')"
+                                        <a th:href="@{/admin/produits/edit(id=${produit.id}, search=${search})}" class="btn-icon edit">✏️ Modifier</a>
+                                        <a onclick="return confirm('Supprimer ce produit ?')"
                                            th:href="@{/admin/produits/delete(id=${produit.id}, page=${currentPage}, search=${search})}"
                                            class="btn-icon delete">🗑️ Supprimer</a>
                                     </div>
@@ -183,24 +96,20 @@
                         </tbody>
                     </table>
                 </div>
-
                 <!-- Pagination -->
-                <div th:if="${pages != null and pages.length > 1}"
-                     style="padding:14px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:6px;">
-                    <span style="font-size:12px;color:var(--text-muted);margin-right:8px;">Page :</span>
+                <div th:if="${pages != null and pages.length > 1}" style="padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:6px;align-items:center;">
+                    <span style="font-size:12px;color:var(--text-muted);margin-right:6px;">Page :</span>
                     <a th:each="page,status : ${pages}"
                        th:href="@{/admin/produits(page=${status.index}, search=${search})}"
                        th:text="${status.index + 1}"
-                       th:style="${status.index == currentPage ?
+                       th:style="${status.index == currentPage} ?
                            'display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:6px;font-size:12px;font-weight:600;background:var(--accent);color:#fff;text-decoration:none;' :
-                           'display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:6px;font-size:12px;font-weight:500;background:var(--bg-surface2);color:var(--text-secondary);text-decoration:none;border:1px solid var(--border);'}">
+                           'display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:6px;font-size:12px;background:var(--bg-surface2);color:var(--text-secondary);text-decoration:none;border:1px solid var(--border);'">
                     </a>
                 </div>
             </div>
-
         </main>
     </div>
 </div>
-
 </body>
 </html>

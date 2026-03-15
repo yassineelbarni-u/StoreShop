@@ -33,8 +33,8 @@ class CategorieServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        categorie1 = new Categorie(1L, "Electronique");
-        categorie2 = new Categorie(2L, "Informatique");
+        categorie1 = new Categorie(1L, "Electronique", null);
+        categorie2 = new Categorie(2L, "Informatique", null);
     }
 
 
@@ -89,9 +89,9 @@ class CategorieServiceImplTest {
     @Test
     @DisplayName("saveCategorie - Sauvegarde réussie d'une nouvelle catégorie")
     void testSaveCategorie_Success() {
-        Categorie newCategorie = new Categorie(null, "Livres");
+        Categorie newCategorie = new Categorie(null, "Livres", null);
         when(categorieRepository.existsByNom("Livres")).thenReturn(false);
-        when(categorieRepository.save(any(Categorie.class))).thenReturn(new Categorie(3L, "Livres"));
+        when(categorieRepository.save(any(Categorie.class))).thenReturn(new Categorie(3L, "Livres", null));
 
         Categorie result = categorieService.saveCategorie(newCategorie);
 
@@ -104,7 +104,7 @@ class CategorieServiceImplTest {
     @Test
     @DisplayName("saveCategorie - Échec si le nom est vide")
     void testSaveCategorie_EmptyName() {
-        Categorie emptyNameCategorie = new Categorie(null, "");
+        Categorie emptyNameCategorie = new Categorie(null, "", null);
 
         RuntimeException exception = assertThrows(RuntimeException.class,
                 () -> categorieService.saveCategorie(emptyNameCategorie));
@@ -116,7 +116,7 @@ class CategorieServiceImplTest {
     @Test
     @DisplayName("saveCategorie - Échec si le nom est null")
     void testSaveCategorie_NullName() {
-        Categorie nullNameCategorie = new Categorie(null, null);
+        Categorie nullNameCategorie = new Categorie(null, null, null);
 
         RuntimeException exception = assertThrows(RuntimeException.class,
                 () -> categorieService.saveCategorie(nullNameCategorie));
@@ -127,7 +127,7 @@ class CategorieServiceImplTest {
     @Test
     @DisplayName("saveCategorie - Échec si une catégorie avec le même nom existe")
     void testSaveCategorie_DuplicateName() {
-        Categorie duplicate = new Categorie(null, "Electronique");
+        Categorie duplicate = new Categorie(null, "Electronique", null);
         when(categorieRepository.existsByNom("Electronique")).thenReturn(true);
 
         RuntimeException exception = assertThrows(RuntimeException.class,
@@ -140,7 +140,7 @@ class CategorieServiceImplTest {
     @Test
     @DisplayName("saveCategorie - Modification d'une catégorie existante (pas de vérification doublon)")
     void testSaveCategorie_Update() {
-        Categorie updated = new Categorie(1L, "Electronique Modifiée");
+        Categorie updated = new Categorie(1L, "Electronique Modifiée", null);
         when(categorieRepository.save(updated)).thenReturn(updated);
 
         Categorie result = categorieService.saveCategorie(updated);

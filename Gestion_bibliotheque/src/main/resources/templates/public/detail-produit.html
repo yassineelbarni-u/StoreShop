@@ -1,51 +1,82 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Détail Produit</title>
+    <title th:text="${produit.nom} + ' — StoreShop'">Détail Produit</title>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.8/css/bootstrap.min.css}" />
     <link rel="stylesheet" th:href="@{/css/public.css}" />
-    <script th:src="@{/webjars/bootstrap/5.3.8/js/bootstrap.bundle.min.js}"></script>
 </head>
 <body>
-    <div th:insert="~{template1 :: navbar}"></div>
 
-    <div class="container py-5">
-        <a th:href="@{/produits}" class="back-link">← Retour au catalogue</a>
+<!-- ===== NAVBAR ===== -->
+<nav class="pub-nav">
+    <a th:href="@{/}" class="pub-nav-brand">
+        <div class="brand-dot">🛒</div>
+        <span class="brand-name">StoreShop</span>
+    </a>
+    <ul class="pub-nav-links">
+        <li><a th:href="@{/produits}" class="nav-link-hide">Catalogue</a></li>
+        <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Connexion</a></li>
+        <li sec:authorize="isAnonymous()"><a th:href="@{/register}" class="nav-cta">Créer un compte</a></li>
+        <li sec:authorize="isAuthenticated()"><a th:href="@{/admin/dashboard}" class="nav-cta">Dashboard</a></li>
+    </ul>
+</nav>
 
-        <div class="detail-shell mt-3">
-            <div class="detail-media">
-                <img th:if="${produit.imageUrl != null and !produit.imageUrl.isEmpty()}"
-                     th:src="${produit.imageUrl}"
-                     th:alt="${produit.nom}">
-                <div th:unless="${produit.imageUrl != null and !produit.imageUrl.isEmpty()}" class="product-card-placeholder detail-placeholder">
-                    Aucun visuel pour ce produit
+<div style="padding: clamp(32px,4vw,60px) clamp(20px,5vw,60px);">
+
+    <a th:href="@{/produits}" class="detail-back">← Retour au catalogue</a>
+
+    <div class="detail-shell">
+
+        <!-- Image -->
+        <div class="detail-media">
+            <img th:if="${produit.imageUrl != null and !produit.imageUrl.isEmpty()}"
+                 th:src="${produit.imageUrl}" th:alt="${produit.nom}">
+            <div th:unless="${produit.imageUrl != null and !produit.imageUrl.isEmpty()}"
+                 class="detail-placeholder">📦</div>
+        </div>
+
+        <!-- Infos -->
+        <div>
+            <span class="detail-cat" th:text="${produit.categorie != null ? produit.categorie.nom : 'Général'}"></span>
+
+            <h1 class="detail-title" th:text="${produit.nom}"></h1>
+
+            <p class="detail-description"
+               th:text="${produit.description != null and !produit.description.isEmpty() ? produit.description : 'Aucune description disponible.'}"></p>
+
+            <!-- Stats bar -->
+            <div class="detail-stats">
+                <div>
+                    <div class="detail-stat-label">Prix</div>
+                    <div class="detail-stat-value amber"
+                         th:text="${#numbers.formatDecimal(produit.prix, 1, 2)} + ' €'"></div>
+                </div>
+                <div style="width:1px;background:rgba(247,244,238,0.12);"></div>
+                <div>
+                    <div class="detail-stat-label">Stock</div>
+                    <div class="detail-stat-value" th:text="${produit.stock} + ' unités'"></div>
                 </div>
             </div>
-            <div class="detail-content">
-                <span class="badge rounded-pill text-bg-light mb-3" th:text="${produit.categorie != null ? produit.categorie.nom : 'Sans catégorie'}"></span>
-                <h1 th:text="${produit.nom}"></h1>
-                <p class="detail-description" th:text="${produit.description != null and !produit.description.isEmpty() ? produit.description : 'Aucune description disponible.'}"></p>
 
-                <div class="detail-stats">
-                    <div>
-                        <span class="detail-label">Prix</span>
-                        <strong th:text="${#numbers.formatDecimal(produit.prix, 1, 2)} + ' €'"></strong>
-                    </div>
-                    <div>
-                        <span class="detail-label">Stock</span>
-                        <strong th:text="${produit.stock}"></strong>
-                    </div>
-                </div>
+            <!-- CTA -->
+            <div class="detail-callout" sec:authorize="isAnonymous()">
+                <h3>Intéressé par ce produit ?</h3>
+                <p>Créez un compte client pour accéder à toutes vos fonctionnalités dédiées.</p>
+                <a th:href="@{/register}" class="btn-ink">Créer un compte →</a>
+            </div>
 
-                <div class="detail-callout">
-                    <h3>Devenir client</h3>
-                    <p>Inscrivez-vous pour préparer la future partie client authentifiée et accéder ensuite à vos fonctionnalités dédiées.</p>
-                    <a th:href="@{/register}" class="btn btn-dark">Créer un compte</a>
-                </div>
+            <div class="detail-callout" sec:authorize="isAuthenticated()"
+                 style="background:rgba(45,90,61,0.07);border-color:rgba(45,90,61,0.15);">
+                <h3>Vous êtes connecté ✓</h3>
+                <p>Retournez au catalogue ou gérez les produits depuis le dashboard.</p>
+                <a th:href="@{/produits}" class="btn-ghost-ink">← Catalogue</a>
             </div>
         </div>
     </div>
+</div>
+
 </body>
 </html>

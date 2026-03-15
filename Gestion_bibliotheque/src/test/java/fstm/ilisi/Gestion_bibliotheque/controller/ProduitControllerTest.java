@@ -62,11 +62,12 @@ class ProduitControllerTest {
 
     @BeforeEach
     void setUp() {
+        // Initialiser MockMvc avec le controller a tester
         mockMvc = MockMvcBuilders.standaloneSetup(produitController).build();
         
         // Créer les catégories pour les tests
-        categorie1 = new Categorie(1L, "Electronique");
-        categorie2 = new Categorie(2L, "Informatique");
+        categorie1 = new Categorie(1L, "Electronique", null);
+        categorie2 = new Categorie(2L, "Informatique", null);
         
         // Créer les produits avec la nouvelle structure
         produit1 = new Produit();
@@ -74,9 +75,9 @@ class ProduitControllerTest {
         produit1.setNom("Smartphone");
         produit1.setCategorie(categorie1);
         produit1.setImageUrl("https://example.com/smartphone.jpg");
-        produit1.setDescription("Téléphone haut de gamme");
-        produit1.setPrix(599.99);
-        produit1.setStock(10);
+        produit1.setDescription("Telephone portable S25 Ultra");
+        produit1.setPrix(800);
+        produit1.setStock(100);
         
         produit2 = new Produit();
         produit2.setId(2L);
@@ -93,20 +94,18 @@ class ProduitControllerTest {
     @DisplayName("Test index - Liste des produits")
     void testIndex() {
 
-        // Arrange
+        // Arrange (Ou jai prepare mes donnees pour les informations)
         List<Produit> produits = Arrays.asList(produit1, produit2);
         Page<Produit> page = new PageImpl<>(produits);
-
-        // simulation du comportement du service pour retourner une page de produits
+        // simuler le comportement du service pour retourner la page de produits
         when(produitService.searchProduits(anyString(), anyInt(), anyInt())).thenReturn(page);
 
-        // appel de la méthode index du controller
+        // Act (quend jai execute la methode que je veux tester)
         String view = produitController.index(model, 0, 5, "");
 
-        // verification du nom de la vue retournée
+        // assert (verifier le resultat)
         assertEquals("produit/ListeProduit", view);
-
-        // verification que les attributs ont ete ajoutes au model
+       // verifier les donnees ajoutees au model
         verify(model).addAttribute("ListeProduit", produits);
         verify(model).addAttribute("currentPage", 0);
     }
@@ -115,7 +114,7 @@ class ProduitControllerTest {
     @DisplayName("Test Supprimer Produit")
     void testDeleteProduit() {
 
-        // Arrange (pour simuler la suppression d'un produit)
+        
         doNothing().when(produitService).deleteProduit(1L);
         
         String redirect = produitController.deleteProduit(1L, 0, "");

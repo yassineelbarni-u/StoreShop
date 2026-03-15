@@ -5,67 +5,86 @@
     <meta charset="UTF-8">
     <title>Liste des Catégories</title>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.8/css/bootstrap.min.css}" />
-    <link rel="stylesheet" th:href="@{/css/user-management.css}" />
-    <script th:src="@{/webjars/bootstrap/5.3.8/js/bootstrap.bundle.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
 </head>
-
 <body>
-    <!-- Inclure la navbar -->
-    <div th:insert="~{template1 :: navbar}"></div>
+<div class="admin-shell">
 
-    <div class="container mt-4">
-        <div class="card p-2 m-2">
-            <div class="card-header">
-                <h1 class="mb-0">📂 Liste des Catégories</h1>
+    <div th:insert="~{adminLayout :: sidebar('categories')}"></div>
+
+    <div class="admin-main">
+        <header class="admin-topbar">
+            <div>
+                <div class="topbar-title">Catégories</div>
+                <div class="topbar-breadcrumb">
+                    <a th:href="@{/admin/dashboard}" style="color:inherit;text-decoration:none;">Accueil</a> › Catégories
+                </div>
+            </div>
+            <div class="topbar-actions">
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/categories/add}" class="btn-primary-custom">＋ Ajouter</a>
+            </div>
+        </header>
+        <main class="admin-content">
+
+            <div th:if="${param.error}" class="alert-custom danger">
+                <span>⚠️</span><span th:text="${param.error[0]}"></span>
+                <button class="alert-close" onclick="this.parentElement.remove()">×</button>
             </div>
 
-            <div class="card-body">
-                <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>Erreur!</strong> <span th:text="${param.error[0]}"></span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="page-header">
+                <div class="page-header-left">
+                    <h1>Gestion des Catégories</h1>
+                    <p>Organisez les catégories de vos produits</p>
                 </div>
-                
-                <a sec:authorize="hasRole('ADMIN')" 
-                   th:href="@{/admin/categories/add}" 
-                   class="btn btn-success mb-3">
-                    ➕ Ajouter une catégorie
-                </a>
-                
-                <div class="table-responsive">
-                    <table class="table table-striped">
+                <div class="page-header-right">
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/categories/add}" class="btn-primary-custom">＋ Nouvelle catégorie</a>
+                    <a th:href="@{/admin/dashboard}" class="btn-ghost">← Dashboard</a>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header"><h2>📂 Toutes les catégories</h2></div>
+                <div style="overflow-x:auto;">
+                    <table class="admin-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Nom</th>
+                                <th>#ID</th><th>Nom</th><th>Produits liés</th>
                                 <th sec:authorize="hasRole('ADMIN')">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:each="categorie : ${listeCategories}">
-                                <td th:text="${categorie.id}"></td>
-                                <td><strong th:text="${categorie.nom}"></strong></td>
+                                <td><span style="font-family:'DM Mono',monospace;font-size:12px;color:#718096;" th:text="'#' + ${categorie.id}"></span></td>
+                                <td>
+                                    <div style="display:flex;align-items:center;gap:10px;">
+                                        <div style="width:32px;height:32px;border-radius:8px;background:#fffbeb;border:1px solid #fde68a;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">📂</div>
+                                        <strong th:text="${categorie.nom}"></strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span style="display:inline-flex;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:#eef0fd;color:#4361ee;"
+                                          th:text="${categorie.produits != null ? categorie.produits.size() + ' produit(s)' : '0 produit'}"></span>
+                                </td>
                                 <td sec:authorize="hasRole('ADMIN')">
-                                    <a th:href="@{/admin/categories/edit(id=${categorie.id})}" 
-                                       class="btn btn-sm btn-primary">
-                                        ✏️ Modifier
-                                    </a>
-                                    <a onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')"
-                                       th:href="@{/admin/categories/delete(id=${categorie.id})}" 
-                                       class="btn btn-sm btn-danger">
-                                        🗑️ Supprimer
-                                    </a>
+                                    <div style="display:flex;gap:6px;">
+                                        <a th:href="@{/admin/categories/edit(id=${categorie.id})}" class="btn-icon edit">✏️ Modifier</a>
+                                        <a onclick="return confirm('Supprimer cette catégorie ?')"
+                                           th:href="@{/admin/categories/delete(id=${categorie.id})}" class="btn-icon delete">🗑️ Supprimer</a>
+                                    </div>
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(listeCategories)}">
-                                <td colspan="3" class="text-center">
-                                    <em>Aucune catégorie disponible</em>
+                                <td colspan="4" style="text-align:center;padding:32px;color:var(--text-muted);">
+                                    <div style="font-size:32px;margin-bottom:8px;">📂</div>
+                                    <p>Aucune catégorie disponible</p>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
+</div>
 </body>
 </html>

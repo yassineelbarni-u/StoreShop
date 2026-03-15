@@ -59,7 +59,7 @@ class PublicControllerTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(publicController).build();
-        categorie = new Categorie(1L, "Roman");
+        categorie = new Categorie(1L, "Roman", null);
         produit = new Produit(1L, "Livre Java", categorie, "/uploads/book.jpg", "Guide complet", 199.0, 12);
     }
 
