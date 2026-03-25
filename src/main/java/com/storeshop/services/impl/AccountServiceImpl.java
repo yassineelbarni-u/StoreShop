@@ -10,6 +10,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/**
+ * Default {@link com.storeshop.services.AccountService}: password encoding and role assignment on
+ * create; transactional reads/writes for consistency.
+ */
 @Service
 @Transactional
 @AllArgsConstructor
@@ -20,14 +24,11 @@ public class AccountServiceImpl implements AccountService {
 
   @Override
   public User AddUser(String username, String password, String email, String ConfirmPassword) {
-    // Check if the user already exists
     User existingUser = UserRepository.findByUsername(username);
     if (existingUser != null) throw new RuntimeException("User already exists");
 
-    // Check if passwords match
     if (!password.equals(ConfirmPassword)) throw new RuntimeException("Passwords  not match");
 
-    // Create and save the new user
     User newUser =
         User.builder()
             .userId(UUID.randomUUID().toString())
@@ -41,7 +42,6 @@ public class AccountServiceImpl implements AccountService {
   }
 
   @Override
-  // Utility method to create a user only if it does not exist
   public User ensureUserExists(String username, String password, String email) {
     User existingUser = UserRepository.findByUsername(username);
     if (existingUser == null) {

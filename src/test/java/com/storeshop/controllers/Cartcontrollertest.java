@@ -89,7 +89,8 @@ class CartControllerTest {
     when(cartService.buildLines(cart)).thenReturn(List.of(cartLine1));
     when(cartService.computeTotal(anyList())).thenReturn(1600.0);
 
-    mockMvc.perform(get("/panier").session(mockSession))
+    mockMvc
+        .perform(get("/panier").session(mockSession))
         .andExpect(status().isOk())
         .andExpect(view().name("public/panier"));
   }
@@ -144,10 +145,9 @@ class CartControllerTest {
     MockHttpSession mockSession = new MockHttpSession();
     doNothing().when(cartService).addItem(any(HttpSession.class), eq(1L), eq(1));
 
-    mockMvc.perform(post("/panier/add")
-            .param("produitId", "1")
-            .param("quantity", "1")
-            .session(mockSession))
+    mockMvc
+        .perform(
+            post("/panier/add").param("produitId", "1").param("quantity", "1").session(mockSession))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/panier"));
   }
@@ -191,7 +191,8 @@ class CartControllerTest {
     MockHttpSession mockSession = new MockHttpSession();
     doNothing().when(cartService).clear(any(HttpSession.class));
 
-    mockMvc.perform(post("/panier/clear").session(mockSession))
+    mockMvc
+        .perform(post("/panier/clear").session(mockSession))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/panier"));
   }

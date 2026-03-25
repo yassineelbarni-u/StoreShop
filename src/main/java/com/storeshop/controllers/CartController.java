@@ -55,8 +55,7 @@ public class CartController {
   }
 
   @PostMapping("/remove")
-  public String removeItem(
-      @RequestParam(name = "produitId") Long produitId, HttpSession session) {
+  public String removeItem(@RequestParam(name = "produitId") Long produitId, HttpSession session) {
 
     cartService.removeItem(session, produitId);
     return "redirect:/panier";

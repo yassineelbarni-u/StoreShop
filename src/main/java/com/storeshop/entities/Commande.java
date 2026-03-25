@@ -36,7 +36,11 @@ public class Commande {
 
   private double total;
 
-  @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @OneToMany(
+      mappedBy = "commande",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.LAZY)
   private List<CommandeItem> items = new ArrayList<>();
 
   public void addItem(CommandeItem item) {

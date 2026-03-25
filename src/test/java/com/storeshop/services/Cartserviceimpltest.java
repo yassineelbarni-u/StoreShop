@@ -164,10 +164,12 @@ class CartServiceImplTest {
     List<CartLine> lines = cartService.buildLines(cart);
 
     assertEquals(2, lines.size());
-    double totalLine1 = lines.stream()
-        .filter(l -> l.getProduit().getId().equals(1L))
-        .mapToDouble(CartLine::getLineTotal)
-        .findFirst().orElse(0);
+    double totalLine1 =
+        lines.stream()
+            .filter(l -> l.getProduit().getId().equals(1L))
+            .mapToDouble(CartLine::getLineTotal)
+            .findFirst()
+            .orElse(0);
     assertEquals(1600.0, totalLine1, 0.01);
   }
 

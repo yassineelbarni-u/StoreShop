@@ -1,5 +1,10 @@
 package com.storeshop.controllers;
 
+import com.storeshop.entities.Role;
+import com.storeshop.entities.User;
+import com.storeshop.repositories.UserRepository;
+import com.storeshop.services.AccountService;
+import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -7,13 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import com.storeshop.entities.Role;
-import com.storeshop.entities.User;
-import com.storeshop.repositories.UserRepository;
-import com.storeshop.services.AccountService;
-
-import lombok.AllArgsConstructor;
 
 @Controller
 @RequestMapping("/admin")

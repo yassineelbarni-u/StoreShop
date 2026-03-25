@@ -34,12 +34,13 @@ class CommandeServiceImplTest {
 
   @BeforeEach
   void setUp() {
-    user = User.builder()
-        .userId("uuid-1")
-        .username("client1")
-        .email("client1@gmail.com")
-        .role(Role.CLIENT)
-        .build();
+    user =
+        User.builder()
+            .userId("uuid-1")
+            .username("client1")
+            .email("client1@gmail.com")
+            .role(Role.CLIENT)
+            .build();
 
     produit1 = new Produit();
     produit1.setId(1L);
@@ -78,8 +79,9 @@ class CommandeServiceImplTest {
   @Test
   @DisplayName("createOrder - lève une exception si panier vide")
   void testCreateOrder_EmptyCart() {
-    RuntimeException ex = assertThrows(RuntimeException.class,
-        () -> commandeService.createOrder(user, new HashMap<>()));
+    RuntimeException ex =
+        assertThrows(
+            RuntimeException.class, () -> commandeService.createOrder(user, new HashMap<>()));
     assertEquals("Le panier est vide", ex.getMessage());
     verify(commandeRepository, never()).save(any());
   }
@@ -87,8 +89,8 @@ class CommandeServiceImplTest {
   @Test
   @DisplayName("createOrder - lève une exception si panier null")
   void testCreateOrder_NullCart() {
-    RuntimeException ex = assertThrows(RuntimeException.class,
-        () -> commandeService.createOrder(user, null));
+    RuntimeException ex =
+        assertThrows(RuntimeException.class, () -> commandeService.createOrder(user, null));
     assertEquals("Le panier est vide", ex.getMessage());
   }
 
@@ -100,8 +102,8 @@ class CommandeServiceImplTest {
 
     when(produitService.getProduitById(1L)).thenReturn(produit1);
 
-    RuntimeException ex = assertThrows(RuntimeException.class,
-        () -> commandeService.createOrder(user, items));
+    RuntimeException ex =
+        assertThrows(RuntimeException.class, () -> commandeService.createOrder(user, items));
     assertTrue(ex.getMessage().contains("Stock insuffisant"));
   }
 
@@ -128,8 +130,7 @@ class CommandeServiceImplTest {
     Commande c2 = new Commande();
     c2.setUser(user);
 
-    when(commandeRepository.findByUserOrderByCreatedAtDesc(user))
-        .thenReturn(List.of(c1, c2));
+    when(commandeRepository.findByUserOrderByCreatedAtDesc(user)).thenReturn(List.of(c1, c2));
 
     List<Commande> result = commandeService.listUserOrders(user);
 
@@ -144,8 +145,7 @@ class CommandeServiceImplTest {
     Commande c2 = new Commande();
     Commande c3 = new Commande();
 
-    when(commandeRepository.findAllByOrderByCreatedAtDesc())
-        .thenReturn(List.of(c1, c2, c3));
+    when(commandeRepository.findAllByOrderByCreatedAtDesc()).thenReturn(List.of(c1, c2, c3));
 
     List<Commande> result = commandeService.listAllOrders();
 
@@ -173,8 +173,8 @@ class CommandeServiceImplTest {
   void testUpdateStatus_NotFound() {
     when(commandeRepository.findById(99L)).thenReturn(Optional.empty());
 
-    RuntimeException ex = assertThrows(RuntimeException.class,
-        () -> commandeService.updateStatus(99L, "LIVREE"));
+    RuntimeException ex =
+        assertThrows(RuntimeException.class, () -> commandeService.updateStatus(99L, "LIVREE"));
     assertEquals("Commande introuvable", ex.getMessage());
     verify(commandeRepository, never()).save(any());
   }

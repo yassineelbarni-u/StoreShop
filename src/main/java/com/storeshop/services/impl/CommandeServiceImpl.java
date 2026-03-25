@@ -14,6 +14,10 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * Order creation ties line items, stock mutation, and persistence in one transaction so a failure
+ * rolls back inventory changes together with the order.
+ */
 @Service
 @Transactional
 @AllArgsConstructor

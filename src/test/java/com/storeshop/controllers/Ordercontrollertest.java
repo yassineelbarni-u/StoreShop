@@ -24,7 +24,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
@@ -50,12 +49,13 @@ class OrderControllerTest {
   void setUp() {
     mockMvc = MockMvcBuilders.standaloneSetup(orderController).build();
 
-    user = User.builder()
-        .userId("uuid-1")
-        .username("client1")
-        .email("client1@gmail.com")
-        .role(Role.CLIENT)
-        .build();
+    user =
+        User.builder()
+            .userId("uuid-1")
+            .username("client1")
+            .email("client1@gmail.com")
+            .role(Role.CLIENT)
+            .build();
 
     cart = new Cart();
     cart.addItem(1L, 2);
@@ -111,7 +111,8 @@ class OrderControllerTest {
   @Test
   @DisplayName("listOrders - avec MockMvc redirige si non connecté")
   void testListOrders_MockMvc_Unauthenticated() throws Exception {
-    mockMvc.perform(get("/commandes"))
+    mockMvc
+        .perform(get("/commandes"))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/login"));
   }

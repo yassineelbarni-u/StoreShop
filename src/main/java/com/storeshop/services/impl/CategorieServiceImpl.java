@@ -8,6 +8,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/** {@link CategorieService} backed by {@link CategorieRepository} with name rules on create. */
 @Service
 @Transactional
 @AllArgsConstructor
@@ -29,12 +30,11 @@ public class CategorieServiceImpl implements CategorieService {
 
   @Override
   public Categorie saveCategorie(Categorie categorie) {
-    // Validation: check that the name is not empty
     if (categorie.getNom() == null || categorie.getNom().trim().isEmpty()) {
       throw new RuntimeException("Le nom de la catégorie ne peut pas être vide");
     }
 
-    // Check if a category with the same name already exists (except if it's a modification)
+    // Duplicate name guard applies only to inserts; updates keep their id and skip this branch.
     if (categorie.getId() == null) {
       if (categorieRepository.existsByNom(categorie.getNom())) {
         throw new RuntimeException("Une catégorie avec ce nom existe déjà");

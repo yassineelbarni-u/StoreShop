@@ -60,7 +60,8 @@ class AdminCommandeControllerTest {
   void testListOrders_MockMvc() throws Exception {
     when(commandeService.listAllOrders()).thenReturn(List.of(commande1, commande2));
 
-    mockMvc.perform(get("/admin/commandes"))
+    mockMvc
+        .perform(get("/admin/commandes"))
         .andExpect(status().isOk())
         .andExpect(view().name("admin/commandes"));
   }
@@ -92,9 +93,8 @@ class AdminCommandeControllerTest {
   void testUpdateStatus_MockMvc() throws Exception {
     doNothing().when(commandeService).updateStatus(1L, "LIVREE");
 
-    mockMvc.perform(post("/admin/commandes/status")
-            .param("id", "1")
-            .param("status", "LIVREE"))
+    mockMvc
+        .perform(post("/admin/commandes/status").param("id", "1").param("status", "LIVREE"))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/admin/commandes?success"));
   }
@@ -104,11 +104,11 @@ class AdminCommandeControllerTest {
   void testUpdateStatus_DifferentStatuses() {
     doNothing().when(commandeService).updateStatus(anyLong(), anyString());
 
-    assertEquals("redirect:/admin/commandes?success",
-        adminCommandeController.updateStatus(1L, "EN_COURS"));
-    assertEquals("redirect:/admin/commandes?success",
-        adminCommandeController.updateStatus(2L, "ANNULEE"));
-    assertEquals("redirect:/admin/commandes?success",
-        adminCommandeController.updateStatus(3L, "VALIDEE"));
+    assertEquals(
+        "redirect:/admin/commandes?success", adminCommandeController.updateStatus(1L, "EN_COURS"));
+    assertEquals(
+        "redirect:/admin/commandes?success", adminCommandeController.updateStatus(2L, "ANNULEE"));
+    assertEquals(
+        "redirect:/admin/commandes?success", adminCommandeController.updateStatus(3L, "VALIDEE"));
   }
 }

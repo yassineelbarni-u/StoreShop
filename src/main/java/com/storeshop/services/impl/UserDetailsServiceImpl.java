@@ -8,6 +8,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+/**
+ * Spring Security adapter: maps domain {@link User} (including encoded password and role) to {@link
+ * UserDetails}. Role names are passed without the {@code ROLE_} prefix; Spring adds the prefix when
+ * building authorities.
+ */
 @Service
 @AllArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -21,12 +26,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     String role = appUser.getRole() != null ? appUser.getRole().name() : "USER";
 
-    UserDetails userDetails =
-        org.springframework.security.core.userdetails.User.withUsername(appUser.getUsername())
-            .password(appUser.getPassword())
-            .roles(role)
-            .build();
-
-    return userDetails;
+    return org.springframework.security.core.userdetails.User.withUsername(appUser.getUsername())
+        .password(appUser.getPassword())
+        .roles(role)
+        .build();
   }
 }

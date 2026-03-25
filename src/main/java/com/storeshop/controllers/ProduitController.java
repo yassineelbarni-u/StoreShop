@@ -1,5 +1,9 @@
 package com.storeshop.controllers;
 
+import com.storeshop.entities.Categorie;
+import com.storeshop.entities.Produit;
+import com.storeshop.services.CategorieService;
+import com.storeshop.services.ProduitService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,7 +11,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
-
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,13 +21,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.storeshop.entities.Categorie;
-import com.storeshop.entities.Produit;
-import com.storeshop.services.CategorieService;
-import com.storeshop.services.ProduitService;
-
-import lombok.AllArgsConstructor;
 
 @Controller
 @RequestMapping("/admin/produits")
