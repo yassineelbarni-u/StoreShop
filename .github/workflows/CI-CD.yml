@@ -1,4 +1,4 @@
-name: Deploy to VPS
+name: Build , Test and Deploy to VPS
 
 on:
   push:
@@ -6,7 +6,23 @@ on:
       - main
 
 jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Run tests
+        run: mvn test
+
   deploy:
+    needs: build-and-test
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to VPS
