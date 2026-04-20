@@ -21,6 +21,7 @@ public class UserController {
 
   private final AccountService accountService;
   private final UserRepository UserRepository;
+  private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
   @GetMapping("/dashboard")
   public String dashboard() {
@@ -87,10 +88,7 @@ public class UserController {
 
       // Update the password if provided
       if (password != null && !password.isEmpty()) {
-        user.setPassword(
-            password); // Assuming the service should hash this, wait, UserController directly sets
-        // password here? Actually, the original code doesn't hash it here. Let's
-        // leave it as is or fix it.
+        user.setPassword(passwordEncoder.encode(password)); // Fixed critical bug
       }
 
       // Update the role

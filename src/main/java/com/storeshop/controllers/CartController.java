@@ -38,7 +38,7 @@ public class CartController {
       HttpSession session) {
 
     cartService.addItem(session, produitId, quantity);
-    if (returnUrl != null && returnUrl.startsWith("/")) {
+    if (returnUrl != null && java.util.regex.Pattern.matches("^/(?!/)([^\\s]*)$", returnUrl)) {
       return "redirect:" + returnUrl;
     }
     return "redirect:/panier";

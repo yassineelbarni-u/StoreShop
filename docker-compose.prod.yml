@@ -4,12 +4,12 @@ services:
     container_name: mysql-db
     restart: always
     environment:
-      MYSQL_DATABASE: gestion_bibliotheque
-      MYSQL_ROOT_PASSWORD: mysql
-    ports:
-      - "3306:3306"
+      MYSQL_DATABASE: ${DB_NAME:-gestion_bibliotheque}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pmysql"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u$$DB_USER -p$$DB_PASSWORD"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -28,8 +28,8 @@ services:
       DB_HOST: db
       DB_PORT: 3306
       DB_NAME: gestion_bibliotheque
-      DB_USER: root
-      DB_PASSWORD: mysql
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
       APP_UPLOAD_DIR: /var/lib/storeshop/uploads
     depends_on:
       db:

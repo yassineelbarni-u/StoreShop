@@ -44,9 +44,9 @@ public class ConfigSecurity {
                 csp.policyDirectives(
                   "default-src 'self'; " +
                   "img-src 'self' data: images.unsplash.com picsum.photos fastly.picsum.photos; " +
-                  "style-src 'self' 'unsafe-inline' fonts.googleapis.com; " +
+                  "style-src 'self' fonts.googleapis.com; " +
                   "font-src 'self' fonts.gstatic.com; " +
-                  "script-src 'self' 'unsafe-inline'; " +
+                  "script-src 'self'; " +
                   "object-src 'none'; " +
                   "base-uri 'self'; " +
                   "frame-ancestors 'none'"))
