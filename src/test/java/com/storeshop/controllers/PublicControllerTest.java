@@ -30,6 +30,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
 
+/**
+ * Tests unitaires pour {@link PublicController}.
+ * Couvre l'affichage des produits pour les clients, la consultation des détails et l'inscription.
+ */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Tests du Controller PublicController")
 class PublicControllerTest {
@@ -48,6 +52,9 @@ class PublicControllerTest {
   private Produit produit;
   private Categorie categorie;
 
+  /**
+   * Initialisation des données de test publiques.
+   */
   @BeforeEach
   void setUp() {
     mockMvc = MockMvcBuilders.standaloneSetup(publicController).build();
@@ -56,6 +63,9 @@ class PublicControllerTest {
         new Produit(1L, categorie, "Livre Java", "/uploads/book.jpg", "Guide complet", 199.0, 12);
   }
 
+  /**
+   * Teste l'affichage de la page d'accueil avec des produits.
+   */
   @Test
   void testHome() {
     Page<Produit> page = new PageImpl<>(Arrays.asList(produit));
@@ -70,6 +80,9 @@ class PublicControllerTest {
     verify(model).addAttribute("categories", Arrays.asList(categorie));
   }
 
+  /**
+   * Teste le cas d'un catalogue vide sans produits ni catégories.
+   */
   @Test
   void testHome_EmptyCatalog() {
     Page<Produit> page = new PageImpl<>(Collections.emptyList());
@@ -82,6 +95,9 @@ class PublicControllerTest {
     verify(model).addAttribute("ListeProduit", Collections.emptyList());
   }
 
+  /**
+   * Teste l'affichage des détails d'un produit.
+   */
   @Test
   void testShowProduitDetail() {
     when(produitService.getProduitById(1L)).thenReturn(produit);
@@ -92,11 +108,17 @@ class PublicControllerTest {
     verify(model).addAttribute("produit", produit);
   }
 
+  /**
+   * Teste l'affichage du formulaire d'inscription.
+   */
   @Test
   void testShowRegisterForm() {
     assertEquals("public/register", publicController.showRegisterForm());
   }
 
+  /**
+   * Teste une inscription réussie.
+   */
   @Test
   void testRegister_Success() {
     String redirect = publicController.register("client1", "client1@gmail.com", "1234", "1234");
@@ -104,6 +126,9 @@ class PublicControllerTest {
     verify(accountService).AddUser("client1", "1234", "client1@gmail.com", "1234");
   }
 
+  /**
+   * Teste une inscription échouée (ex: mots de passe non identiques).
+   */
   @Test
   void testRegister_Error() {
     when(accountService.AddUser("client1", "1234", "client1@gmail.com", "0000"))
@@ -116,6 +141,11 @@ class PublicControllerTest {
     assertTrue(redirect.contains("email=client1%40gmail.com"));
   }
 
+  /**
+   * Teste la page d'accueil avec MockMvc.
+   * 
+   * @throws Exception En cas d'erreur MockMvc.
+   */
   @Test
   void testHomeWithMockMvc() throws Exception {
     Page<Produit> page = new PageImpl<>(Arrays.asList(produit));
@@ -125,6 +155,11 @@ class PublicControllerTest {
     mockMvc.perform(get("/")).andExpect(status().isOk()).andExpect(view().name("public/home"));
   }
 
+  /**
+   * Teste les détails du produit via MockMvc.
+   * 
+   * @throws Exception En cas d'erreur MockMvc.
+   */
   @Test
   void testDetailWithMockMvc() throws Exception {
     when(produitService.getProduitById(1L)).thenReturn(produit);

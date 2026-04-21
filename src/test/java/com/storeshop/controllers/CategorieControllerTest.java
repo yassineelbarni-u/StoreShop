@@ -28,6 +28,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
 
+/**
+ * Tests unitaires pour {@link CategorieController}.
+ * Vérifie le CRUD des catégories : liste, ajout, modification et suppression.
+ */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Tests du Controller CategorieController")
 class CategorieControllerTest {
@@ -42,6 +46,9 @@ class CategorieControllerTest {
   private Categorie categorie1;
   private Categorie categorie2;
 
+  /**
+   * Initialisation des catégories de test et de MockMvc.
+   */
   @BeforeEach
   void setUp() {
     mockMvc = MockMvcBuilders.standaloneSetup(categorieController).build();
@@ -49,6 +56,9 @@ class CategorieControllerTest {
     categorie2 = new Categorie(2L, null, "Informatique");
   }
 
+  /**
+   * Teste l'affichage de la liste des catégories.
+   */
   @Test
   @DisplayName("Test index - Liste des catégories")
   void testIndex() {
@@ -62,6 +72,11 @@ class CategorieControllerTest {
     verify(categorieService).getAllCategories();
   }
 
+  /**
+   * Teste l'accès à l'index via MockMvc.
+   * 
+   * @throws Exception En cas d'erreur MockMvc.
+   */
   @Test
   @DisplayName("Test index avec MockMvc")
   void testIndexWithMockMvc() throws Exception {
@@ -73,6 +88,9 @@ class CategorieControllerTest {
         .andExpect(view().name("categorie/ListeCategorie"));
   }
 
+  /**
+   * Teste l'affichage du formulaire d'ajout.
+   */
   @Test
   @DisplayName("Test showAddForm - Affiche le formulaire d'ajout")
   void testShowAddForm() {
@@ -82,6 +100,11 @@ class CategorieControllerTest {
     verify(model).addAttribute(eq("categorie"), any(Categorie.class));
   }
 
+  /**
+   * Teste l'accès au formulaire d'ajout via MockMvc.
+   * 
+   * @throws Exception En cas d'erreur MockMvc.
+   */
   @Test
   @DisplayName("Test showAddForm avec MockMvc")
   void testShowAddFormWithMockMvc() throws Exception {
@@ -91,6 +114,9 @@ class CategorieControllerTest {
         .andExpect(view().name("categorie/ajouterCategorie"));
   }
 
+  /**
+   * Teste la création réussie d'une catégorie.
+   */
   @Test
   @DisplayName("Test addCategorie - Ajout réussi")
   void testAddCategorie_Success() {
@@ -104,6 +130,9 @@ class CategorieControllerTest {
     verify(categorieService).saveCategorie(newCategorie);
   }
 
+  /**
+   * Teste l'échec d'ajout (ex: nom en double).
+   */
   @Test
   @DisplayName("Test addCategorie - Échec avec erreur")
   void testAddCategorie_Error() {
@@ -116,6 +145,9 @@ class CategorieControllerTest {
     assertTrue(redirect.startsWith("redirect:/admin/categories/add?error="));
   }
 
+  /**
+   * Teste l'affichage du formulaire de modification.
+   */
   @Test
   @DisplayName("Test showEditForm - Affiche le formulaire d'édition")
   void testShowEditForm() {
@@ -127,6 +159,11 @@ class CategorieControllerTest {
     verify(model).addAttribute("categorie", categorie1);
   }
 
+  /**
+   * Teste le formulaire d'édition avec MockMvc.
+   * 
+   * @throws Exception En cas d'erreur MockMvc.
+   */
   @Test
   @DisplayName("Test showEditForm avec MockMvc")
   void testShowEditFormWithMockMvc() throws Exception {
@@ -138,6 +175,9 @@ class CategorieControllerTest {
         .andExpect(view().name("categorie/editCategorie"));
   }
 
+  /**
+   * Teste la modification réussie d'une catégorie.
+   */
   @Test
   @DisplayName("Test editCategorie - Modification réussie")
   void testEditCategorie_Success() {

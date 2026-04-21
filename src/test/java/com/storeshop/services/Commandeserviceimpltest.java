@@ -19,6 +19,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+/**
+ * Tests unitaires pour {@link CommandeServiceImpl}.
+ * Valide la création de commandes, la gestion des stocks et la récupération des historiques.
+ */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Tests du Service CommandeServiceImpl")
 class CommandeServiceImplTest {
@@ -32,6 +36,9 @@ class CommandeServiceImplTest {
   private Produit produit1;
   private Produit produit2;
 
+  /**
+   * Initialisation des données de test (utilisateur et produits).
+   */
   @BeforeEach
   void setUp() {
     user =
@@ -55,6 +62,9 @@ class CommandeServiceImplTest {
     produit2.setStock(5);
   }
 
+  /**
+   * Vérifie la création réussie d'une commande.
+   */
   @Test
   @DisplayName("createOrder - crée une commande avec succès")
   void testCreateOrder_Success() {
@@ -76,6 +86,9 @@ class CommandeServiceImplTest {
     verify(commandeRepository).save(any(Commande.class));
   }
 
+  /**
+   * Vérifie qu'on ne peut pas créer de commande avec un panier vide.
+   */
   @Test
   @DisplayName("createOrder - lève une exception si panier vide")
   void testCreateOrder_EmptyCart() {
@@ -86,6 +99,9 @@ class CommandeServiceImplTest {
     verify(commandeRepository, never()).save(any());
   }
 
+  /**
+   * Vérifie la gestion d'un panier null.
+   */
   @Test
   @DisplayName("createOrder - lève une exception si panier null")
   void testCreateOrder_NullCart() {
@@ -94,6 +110,9 @@ class CommandeServiceImplTest {
     assertEquals("Le panier est vide", ex.getMessage());
   }
 
+  /**
+   * Vérifie la gestion du stock insuffisant.
+   */
   @Test
   @DisplayName("createOrder - lève une exception si stock insuffisant")
   void testCreateOrder_InsufficientStock() {
@@ -107,6 +126,9 @@ class CommandeServiceImplTest {
     assertTrue(ex.getMessage().contains("Stock insuffisant"));
   }
 
+  /**
+   * Vérifie que le stock est correctement décrémenté après une commande.
+   */
   @Test
   @DisplayName("createOrder - décrémente le stock après commande")
   void testCreateOrder_DecrementsStock() {
@@ -122,6 +144,9 @@ class CommandeServiceImplTest {
     assertEquals(7, produit1.getStock());
   }
 
+  /**
+   * Vérifie la récupération des commandes d'un utilisateur spécifique.
+   */
   @Test
   @DisplayName("listUserOrders - retourne les commandes de l'utilisateur")
   void testListUserOrders() {
@@ -138,6 +163,9 @@ class CommandeServiceImplTest {
     verify(commandeRepository).findByUserOrderByCreatedAtDesc(user);
   }
 
+  /**
+   * Vérifie la récupération de toutes les commandes (administration).
+   */
   @Test
   @DisplayName("listAllOrders - retourne toutes les commandes")
   void testListAllOrders() {
@@ -153,6 +181,9 @@ class CommandeServiceImplTest {
     verify(commandeRepository).findAllByOrderByCreatedAtDesc();
   }
 
+  /**
+   * Vérifie la mise à jour du statut d'une commande.
+   */
   @Test
   @DisplayName("updateStatus - met à jour le statut d'une commande")
   void testUpdateStatus_Success() {
@@ -168,6 +199,9 @@ class CommandeServiceImplTest {
     verify(commandeRepository).save(commande);
   }
 
+  /**
+   * Vérifie qu'une exception est levée si la commande à mettre à jour n'existe pas.
+   */
   @Test
   @DisplayName("updateStatus - lève une exception si commande introuvable")
   void testUpdateStatus_NotFound() {

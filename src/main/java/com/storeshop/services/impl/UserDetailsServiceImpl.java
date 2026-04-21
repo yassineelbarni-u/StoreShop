@@ -9,9 +9,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
- * Spring Security adapter: maps domain {@link User} (including encoded password and role) to {@link
- * UserDetails}. Role names are passed without the {@code ROLE_} prefix; Spring adds the prefix when
- * building authorities.
+ * Implémentation de {@link UserDetailsService} pour Spring Security.
+ * Adapte les utilisateurs du domaine {@link User} pour le mécanisme d'authentification de Spring.
+ * Transforme les rôles de l'application en autorités de sécurité.
  */
 @Service
 @AllArgsConstructor
@@ -19,6 +19,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
   private final AccountService accountService;
 
+  /**
+   * Charge un utilisateur par son nom d'utilisateur et construit un objet {@link UserDetails}.
+   * 
+   * @param username Le nom de l'utilisateur à charger.
+   * @return Un objet UserDetails prêt pour l'authentification.
+   * @throws UsernameNotFoundException Si l'utilisateur n'existe pas.
+   */
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     User appUser = accountService.loadUserByUsername(username);

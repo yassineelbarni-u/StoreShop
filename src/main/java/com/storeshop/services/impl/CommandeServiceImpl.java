@@ -15,8 +15,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
- * Order creation ties line items, stock mutation, and persistence in one transaction so a failure
- * rolls back inventory changes together with the order.
+ * Implémentation du service de gestion des commandes.
+ * Gère la création des commandes, la mutation des stocks, et le suivi du statut des commandes.
+ * Les opérations sont transactionnelles pour garantir l'intégrité des données entre le stock et la commande.
  */
 @Service
 @Transactional
@@ -26,6 +27,15 @@ public class CommandeServiceImpl implements CommandeService {
   private final CommandeRepository commandeRepository;
   private final ProduitService produitService;
 
+  /**
+   * Crée une nouvelle commande pour un utilisateur donné.
+   * Vérifie la disponibilité des stocks, met à jour l'inventaire et enregistre la commande avec ses lignes.
+   * 
+   * @param user  L'utilisateur passant la commande.
+   * @param items Map contenant les IDs des produits et leurs quantités respectives.
+   * @return La commande créée et sauvegardée.
+   * @throws RuntimeException Si le panier est vide ou si le stock est insuffisant pour un produit.
+   */
   @Override
   public Commande createOrder(User user, Map<Long, Integer> items) {
     if (items == null || items.isEmpty()) {
@@ -64,16 +74,33 @@ public class CommandeServiceImpl implements CommandeService {
     return commandeRepository.save(commande);
   }
 
+  /**
+   * Liste les commandes passées par un utilisateur spécifique.
+   * 
+   * @param user L'utilisateur concerné.
+   * @return Liste des commandes triées par date décroissante.
+   */
   @Override
   public List<Commande> listUserOrders(User user) {
     return commandeRepository.findByUserOrderByCreatedAtDesc(user);
   }
 
+  /**
+   * Liste toutes les commandes enregistrées dans le système.
+   * 
+   * @return Liste complète des commandes triées par date décroissante.
+   */
   @Override
   public List<Commande> listAllOrders() {
     return commandeRepository.findAllByOrderByCreatedAtDesc();
   }
 
+  /**
+   * Met à jour le statut d'une commande (ex: EN_COURS, LIVREE).
+   * 
+   * @param commandeId L'ID de la commande.
+   * @param status     Le nouveau statut.
+   */
   @Override
   public void updateStatus(Long commandeId, String status) {
     Commande commande =

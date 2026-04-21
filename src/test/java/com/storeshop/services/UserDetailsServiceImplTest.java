@@ -19,6 +19,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+/**
+ * Tests unitaires pour {@link UserDetailsServiceImpl}.
+ * Vérifie l'intégration avec Spring Security pour le chargement des utilisateurs par leur nom.
+ */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Tests du Service UserDetailsServiceImpl")
 class UserDetailsServiceImplTest {
@@ -29,6 +33,9 @@ class UserDetailsServiceImplTest {
 
   private User testUser;
 
+  /**
+   * Initialisation d'un utilisateur de test avec le rôle ADMIN.
+   */
   @BeforeEach
   void setUp() {
     testUser =
@@ -41,7 +48,11 @@ class UserDetailsServiceImplTest {
             .build();
   }
 
+  /**
+   * Vérifie le chargement réussi d'un utilisateur existant.
+   */
   @Test
+  @DisplayName("loadUserByUsername - Chargement réussi")
   void testLoadUserByUsername_Success() {
     when(accountService.loadUserByUsername("testuser")).thenReturn(testUser);
 
@@ -54,7 +65,11 @@ class UserDetailsServiceImplTest {
         result.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")));
   }
 
+  /**
+   * Vérifie qu'une exception est levée si l'utilisateur n'est pas trouvé.
+   */
   @Test
+  @DisplayName("loadUserByUsername - Utilisateur non trouvé")
   void testLoadUserByUsername_NotFound() {
     when(accountService.loadUserByUsername("unknown")).thenReturn(null);
 
@@ -62,7 +77,11 @@ class UserDetailsServiceImplTest {
         UsernameNotFoundException.class, () -> userDetailsService.loadUserByUsername("unknown"));
   }
 
+  /**
+   * Vérifie le bon mapping du rôle USER vers l'autorité Spring Security.
+   */
   @Test
+  @DisplayName("loadUserByUsername - Vérification mapping rôle USER")
   void testLoadUserByUsername_SingleRole() {
     User singleRoleUser =
         User.builder()

@@ -28,6 +28,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
 
+/**
+ * Tests unitaires pour {@link OrderController}.
+ * Vérifie le processus de commande (checkout) et la consultation de l'historique des commandes.
+ */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Tests du Controller OrderController")
 class OrderControllerTest {
@@ -45,6 +49,9 @@ class OrderControllerTest {
   private User user;
   private Cart cart;
 
+  /**
+   * Préparation de l'environnement de test avec un utilisateur et un panier fictifs.
+   */
   @BeforeEach
   void setUp() {
     mockMvc = MockMvcBuilders.standaloneSetup(orderController).build();
@@ -61,6 +68,9 @@ class OrderControllerTest {
     cart.addItem(1L, 2);
   }
 
+  /**
+   * Teste la récupération des commandes pour un utilisateur authentifié.
+   */
   @Test
   @DisplayName("listOrders - retourne les commandes de l'utilisateur connecté")
   void testListOrders_Authenticated() {
@@ -76,6 +86,9 @@ class OrderControllerTest {
     verify(model).addAttribute("orders", List.of(c1, c2));
   }
 
+  /**
+   * Teste le refus d'accès aux commandes si l'utilisateur n'est pas connecté.
+   */
   @Test
   @DisplayName("listOrders - redirige vers login si non authentifié")
   void testListOrders_NotAuthenticated() {
@@ -84,8 +97,12 @@ class OrderControllerTest {
     verify(accountService, never()).loadUserByUsername(any());
   }
 
+  /**
+   * Teste le processus complet de validation d'une commande (checkout).
+   */
   @Test
   @DisplayName("checkout - crée une commande et vide le panier")
+  @SuppressWarnings("unchecked")
   void testCheckout_Success() {
     when(principal.getName()).thenReturn("client1");
     when(cartService.getCart(session)).thenReturn(cart);
@@ -100,6 +117,9 @@ class OrderControllerTest {
     verify(cartService).clear(session);
   }
 
+  /**
+   * Teste le checkout sans authentification.
+   */
   @Test
   @DisplayName("checkout - redirige vers login si non authentifié")
   void testCheckout_NotAuthenticated() {
@@ -108,6 +128,11 @@ class OrderControllerTest {
     verify(commandeService, never()).createOrder(any(), any());
   }
 
+  /**
+   * Teste la redirection via MockMvc pour un utilisateur non connecté.
+   * 
+   * @throws Exception En cas d'erreur MockMvc.
+   */
   @Test
   @DisplayName("listOrders - avec MockMvc redirige si non connecté")
   void testListOrders_MockMvc_Unauthenticated() throws Exception {

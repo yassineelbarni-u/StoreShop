@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/**
+ * Contrôleur pour la gestion des catégories par l'administrateur.
+ * Permet de lister, créer, modifier et supprimer des catégories.
+ */
 @Controller
 @RequestMapping("/admin/categories")
 @AllArgsConstructor
@@ -19,7 +23,12 @@ public class CategorieController {
 
   private final CategorieService categorieService;
 
-  // Display the list of categories
+  /**
+   * Affiche la liste de toutes les catégories.
+   * 
+   * @param model Le modèle pour la vue.
+   * @return Le nom de la vue de la liste des catégories.
+   */
   @GetMapping
   public String index(Model model) {
     List<Categorie> categories = categorieService.getAllCategories();
@@ -27,27 +36,41 @@ public class CategorieController {
     return "categorie/ListeCategorie";
   }
 
-  // Display the add form
+  /**
+   * Affiche le formulaire d'ajout d'une nouvelle catégorie.
+   * 
+   * @param model Le modèle pour la vue.
+   * @return Le nom de la vue du formulaire d'ajout.
+   */
   @GetMapping("/add")
   public String showAddForm(Model model) {
     model.addAttribute("categorie", new Categorie());
     return "categorie/ajouterCategorie";
   }
 
-  // Save a new category
+  /**
+   * Enregistre une nouvelle catégorie.
+   * 
+   * @param categorie L'objet catégorie à enregistrer.
+   * @return Redirection vers la liste des catégories ou vers le formulaire en cas d'erreur.
+   */
   @PostMapping("/add")
   public String addCategorie(@ModelAttribute Categorie categorie) {
     try {
       categorieService.saveCategorie(categorie);
       return "redirect:/admin/categories";
     } catch (RuntimeException e) {
-
-      // In case of error (name already exists, etc.)
       return "redirect:/admin/categories/add?error=" + e.getMessage();
     }
   }
 
-  // Display the edit form
+  /**
+   * Affiche le formulaire de modification d'une catégorie existante.
+   * 
+   * @param id    L'ID de la catégorie à modifier.
+   * @param model Le modèle pour la vue.
+   * @return Le nom de la vue du formulaire d'édition.
+   */
   @GetMapping("/edit")
   public String showEditForm(@RequestParam(name = "id") Long id, Model model) {
     Categorie categorie = categorieService.getCategorieById(id);
@@ -55,7 +78,12 @@ public class CategorieController {
     return "categorie/editCategorie";
   }
 
-  // Update a category
+  /**
+   * Met à jour une catégorie existante.
+   * 
+   * @param categorie L'objet catégorie modifié.
+   * @return Redirection vers la liste des catégories ou vers le formulaire en cas d'erreur.
+   */
   @PostMapping("/edit")
   public String editCategorie(@ModelAttribute Categorie categorie) {
     try {
@@ -66,7 +94,12 @@ public class CategorieController {
     }
   }
 
-  // Delete a category
+  /**
+   * Supprime une catégorie.
+   * 
+   * @param id L'ID de la catégorie à supprimer.
+   * @return Redirection vers la liste des catégories.
+   */
   @GetMapping("/delete")
   public String deleteCategorie(@RequestParam(name = "id") Long id) {
     try {

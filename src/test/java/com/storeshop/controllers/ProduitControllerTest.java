@@ -32,24 +32,22 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
 
-/** Unit tests for ProduitController. Uses JUnit 5 (Jupiter) and Mockito */
-
-// activate Mockito with junit in this test
+/**
+ * Tests unitaires pour {@link ProduitController}.
+ * Utilise JUnit 5 et Mockito pour valider la gestion des produits (CRUD) et l'intégration des catégories.
+ */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Tests du Controller Produit")
 class ProduitControllerTest {
 
-  // Mock dependencies to isolate the controller
   @Mock private ProduitService produitService;
 
   @Mock private CategorieService categorieService;
 
-  // Mock the model to verify added attributes
   @Mock private Model model;
 
   @InjectMocks private ProduitController produitController;
 
-  // MockMvc to test HTTP endpoints
   private MockMvc mockMvc;
 
   private Produit produit1;
@@ -57,16 +55,16 @@ class ProduitControllerTest {
   private Categorie categorie1;
   private Categorie categorie2;
 
+  /**
+   * Initialisation des données de test avant chaque exécution.
+   */
   @BeforeEach
   void setUp() {
-    // Initialize MockMvc with the controller to test
     mockMvc = MockMvcBuilders.standaloneSetup(produitController).build();
 
-    // Create categories for tests
     categorie1 = new Categorie(1L, null, "Electronique");
     categorie2 = new Categorie(2L, null, "Informatique");
 
-    // Create products with the new structure
     produit1 = new Produit();
     produit1.setId(1L);
     produit1.setName("Smartphone");
@@ -86,30 +84,29 @@ class ProduitControllerTest {
     produit2.setStock(5);
   }
 
+  /**
+   * Teste l'affichage de la liste paginée des produits.
+   */
   @Test
   @DisplayName("Test index - Liste des produits")
   void testIndex() {
-
-    // Arrange (Where I prepared my data for information)
     List<Produit> produits = Arrays.asList(produit1, produit2);
     Page<Produit> page = new PageImpl<>(produits);
-    // simulate service behavior to return product page
     when(produitService.searchProduits(anyString(), anyInt(), anyInt())).thenReturn(page);
 
-    // Act (when I executed the method I want to test)
     String view = produitController.index(model, 0, 5, "");
 
-    // assert (verify the result)
     assertEquals("produit/ListeProduit", view);
-    // verify data added to the model
     verify(model).addAttribute("ListeProduit", produits);
     verify(model).addAttribute("currentPage", 0);
   }
 
+  /**
+   * Teste la suppression d'un produit.
+   */
   @Test
   @DisplayName("Test Supprimer Produit")
   void testDeleteProduit() {
-
     doNothing().when(produitService).deleteProduit(1L);
 
     String redirect = produitController.deleteProduit(1L, 0, "");
@@ -118,72 +115,73 @@ class ProduitControllerTest {
     verify(produitService).deleteProduit(1L);
   }
 
+  /**
+   * Teste l'affichage du formulaire d'édition.
+   */
   @Test
   @DisplayName("Test showEditForm")
   void testShowEditForm() {
-
-    // Arrange
     when(produitService.getProduitById(1L)).thenReturn(produit1);
     when(categorieService.getAllCategories()).thenReturn(Arrays.asList(categorie1, categorie2));
 
-    // Act
     String view = produitController.showEditForm(1L, "", model);
 
-    // Assert
     assertEquals("produit/editProduit", view);
     verify(model).addAttribute("produit", produit1);
     verify(model).addAttribute(eq("categories"), anyList());
   }
 
+  /**
+   * Teste l'enregistrement d'un produit existant.
+   */
   @Test
   @DisplayName("Test saveProduit")
   void testSaveProduit() {
-
-    // Arrange
     when(categorieService.getCategorieById(1L)).thenReturn(categorie1);
     when(produitService.saveProduit(any(Produit.class))).thenReturn(produit1);
 
-    // Act
     String redirect = produitController.saveProduit(produit1, 1L, "", null);
 
-    // Assert
     assertEquals("redirect:/admin/produits?search=", redirect);
     verify(categorieService).getCategorieById(1L);
     verify(produitService).saveProduit(produit1);
   }
 
+  /**
+   * Teste l'affichage du formulaire d'ajout.
+   */
   @Test
   @DisplayName("Test showAddForm")
   void testShowAddForm() {
-    // Arrange
     when(categorieService.getAllCategories()).thenReturn(Arrays.asList(categorie1, categorie2));
 
-    // Act
     String view = produitController.showAddForm("", model);
 
-    // Assert
     assertEquals("produit/ajouterProduit", view);
 
     verify(model).addAttribute(eq("produit"), any(Produit.class));
     verify(model).addAttribute(eq("categories"), anyList());
   }
 
+  /**
+   * Teste la création d'un nouveau produit.
+   */
   @Test
   @DisplayName("Test addProduit")
   void testAddProduit() {
-    // Arrange
     when(categorieService.getCategorieById(1L)).thenReturn(categorie1);
     when(produitService.saveProduit(any(Produit.class))).thenReturn(produit1);
 
-    // Act
     String redirect = produitController.addProduit(produit1, 1L, "", null);
 
-    // Assert
     assertEquals("redirect:/admin/produits?search=", redirect);
     verify(categorieService).getCategorieById(1L);
     verify(produitService).saveProduit(produit1);
   }
 
+  /**
+   * Teste la route vers l'accueil de l'administration.
+   */
   @Test
   @DisplayName("Test home")
   void testHome() {
@@ -191,6 +189,11 @@ class ProduitControllerTest {
     assertEquals("redirect:/admin/dashboard", redirect);
   }
 
+  /**
+   * Teste la liste des produits via MockMvc.
+   * 
+   * @throws Exception En cas d'erreur MockMvc.
+   */
   @Test
   @DisplayName("Test avec MockMvc ")
   void testIndexWithMockMvc() throws Exception {
@@ -203,3 +206,4 @@ class ProduitControllerTest {
         .andExpect(view().name("produit/ListeProduit"));
   }
 }
+

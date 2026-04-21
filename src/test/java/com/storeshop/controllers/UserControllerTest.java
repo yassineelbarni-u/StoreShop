@@ -21,10 +21,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
 
+/**
+ * Tests unitaires pour {@link UserController}.
+ * Valide la gestion administrative des utilisateurs : dashboard, listing, ajout, modification et suppression.
+ */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Tests du Controller UserController")
 class UserControllerTest {
@@ -37,14 +39,14 @@ class UserControllerTest {
 
   @InjectMocks private UserController userController;
 
-  private MockMvc mockMvc;
   private User user1;
   private User user2;
 
+  /**
+   * Initialisation des utilisateurs mockés.
+   */
   @BeforeEach
   void setUp() {
-    mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
-
     user1 =
         User.builder()
             .userId("uuid-1")
@@ -64,11 +66,17 @@ class UserControllerTest {
             .build();
   }
 
+  /**
+   * Teste l'accès au tableau de bord.
+   */
   @Test
   void testDashboard() {
     assertEquals("admin/dashboard", userController.dashboard());
   }
 
+  /**
+   * Teste le listing de tous les utilisateurs.
+   */
   @Test
   void testListUsers() {
     List<User> users = Arrays.asList(user1, user2);
@@ -80,6 +88,9 @@ class UserControllerTest {
     verify(model).addAttribute("users", users);
   }
 
+  /**
+   * Teste l'affichage du formulaire de création.
+   */
   @Test
   void testShowAddUserForm() {
     String view = userController.showAddUserForm(model);
@@ -87,6 +98,9 @@ class UserControllerTest {
     verify(model).addAttribute("roles", Role.values());
   }
 
+  /**
+   * Teste la création d'un utilisateur avec succès.
+   */
   @Test
   void testAddUser_Success() {
     when(accountService.AddUser("newuser", "pass", "new@gmail.com", "pass")).thenReturn(user1);
@@ -97,6 +111,9 @@ class UserControllerTest {
     verify(accountService).AddUser("newuser", "pass", "new@gmail.com", "pass");
   }
 
+  /**
+   * Teste le cas d'erreur lors de l'ajout (ex: déjà existant).
+   */
   @Test
   void testAddUser_Error() {
     when(accountService.AddUser("admin", "pass", "admin@gmail.com", "pass"))
@@ -107,6 +124,9 @@ class UserControllerTest {
     assertTrue(redirect.startsWith("redirect:/admin/users/add?error="));
   }
 
+  /**
+   * Teste l'affichage du formulaire de modification d'un utilisateur existant.
+   */
   @Test
   void testShowEditUserForm() {
     when(appUserRepository.findById("uuid-1")).thenReturn(Optional.of(user1));
@@ -118,6 +138,9 @@ class UserControllerTest {
     verify(model).addAttribute("allRoles", Role.values());
   }
 
+  /**
+   * Teste la mise à jour des informations sans changer le mot de passe.
+   */
   @Test
   void testEditUser_SuccessWithoutPassword() {
     when(appUserRepository.findById("uuid-1")).thenReturn(Optional.of(user1));
@@ -131,6 +154,9 @@ class UserControllerTest {
     assertEquals("newmail@gmail.com", user1.getEmail());
   }
 
+  /**
+   * Teste la suppression d'un utilisateur.
+   */
   @Test
   void testDeleteUser_Success() {
     doNothing().when(appUserRepository).deleteById("uuid-1");

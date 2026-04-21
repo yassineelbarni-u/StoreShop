@@ -22,19 +22,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * Contrôleur pour la gestion administrative des produits.
+ * Gère le cycle de vie des produits : affichage, création, modification, suppression et upload d'images.
+ */
 @Controller
 @RequestMapping("/admin/produits")
 @AllArgsConstructor
 public class ProduitController {
 
-  // Dependency injection
   private final ProduitService produitService;
   private final CategorieService categorieService;
 
-  // Path to store uploaded images
+  /** Chemin pour le stockage des images uploadées. */
   private static final String UPLOAD_DIR = "src/main/resources/static/uploads/";
 
-  // Display the list of products with pagination and search
+  /**
+   * Affiche la liste des produits avec pagination et recherche.
+   * 
+   * @param model  Le modèle pour la vue.
+   * @param page   Le numéro de la page.
+   * @param size   Le nombre d'éléments par page.
+   * @param search Le mot-clé de recherche.
+   * @return Le nom de la vue de la liste des produits.
+   */
   @GetMapping
   public String index(
       Model model,
@@ -50,6 +61,14 @@ public class ProduitController {
     return "produit/ListeProduit";
   }
 
+  /**
+   * Supprime un produit du catalogue.
+   * 
+   * @param id     L'ID du produit.
+   * @param page   La page actuelle pour la redirection.
+   * @param search Le terme de recherche actuel.
+   * @return Redirection vers la liste des produits.
+   */
   @GetMapping("/delete")
   public String deleteProduit(
       @RequestParam(name = "id") Long id,
@@ -68,7 +87,14 @@ public class ProduitController {
     }
   }
 
-  // Display the product edit form
+  /**
+   * Affiche le formulaire de modification d'un produit.
+   * 
+   * @param id     L'ID du produit à modifier.
+   * @param search Le terme de recherche actuel.
+   * @param model  Le modèle pour la vue.
+   * @return Le nom de la vue du formulaire d'édition.
+   */
   @GetMapping("/edit")
   public String showEditForm(
       @RequestParam(name = "id") Long id,
@@ -84,7 +110,15 @@ public class ProduitController {
     return "produit/editProduit";
   }
 
-  // Method to save product modification
+  /**
+   * Enregistre les modifications d'un produit.
+   * 
+   * @param produit     L'objet produit contenant les données modifiées.
+   * @param categorieId L'ID de la catégorie associée.
+   * @param search      Le terme de recherche actuel.
+   * @param imageFile   Le fichier image optionnel.
+   * @return Redirection vers la liste des produits ou le formulaire en cas d'erreur.
+   */
   @PostMapping("/edit")
   @SuppressWarnings("CallToPrintStackTrace")
   public String saveProduit(
@@ -93,15 +127,11 @@ public class ProduitController {
       @RequestParam(name = "search", defaultValue = "") String search,
       @RequestParam(name = "imageFile", required = false) MultipartFile imageFile) {
 
-    // Associate the category to the product
     if (categorieId != null) {
       Categorie categorie = categorieService.getCategorieById(categorieId);
-
-      // Associate the category to the product
       produit.setCategorie(categorie);
     }
 
-    // Handle image upload if a file is provided
     if (imageFile != null && !imageFile.isEmpty()) {
       try {
         String fileName = saveImageFile(imageFile);
@@ -124,6 +154,13 @@ public class ProduitController {
     }
   }
 
+  /**
+   * Affiche le formulaire d'ajout d'un produit.
+   * 
+   * @param search Le terme de recherche actuel.
+   * @param model  Le modèle pour la vue.
+   * @return Le nom de la vue du formulaire d'ajout.
+   */
   @GetMapping("/add")
   public String showAddForm(
       @RequestParam(name = "search", defaultValue = "") String search, Model model) {
@@ -134,6 +171,15 @@ public class ProduitController {
     return "produit/ajouterProduit";
   }
 
+  /**
+   * Enregistre un nouveau produit.
+   * 
+   * @param produit     Le produit à ajouter.
+   * @param categorieId L'ID de la catégorie.
+   * @param search      Le terme de recherche actuel.
+   * @param imageFile   Le fichier image uploadé.
+   * @return Redirection vers le catalogue ou le formulaire en cas d'erreur.
+   */
   @PostMapping("/add")
   @SuppressWarnings("CallToPrintStackTrace")
   public String addProduit(
@@ -142,13 +188,11 @@ public class ProduitController {
       @RequestParam(name = "search", defaultValue = "") String search,
       @RequestParam(name = "imageFile", required = false) MultipartFile imageFile) {
 
-    // Associate the category to the product
     if (categorieId != null) {
       Categorie categorie = categorieService.getCategorieById(categorieId);
       produit.setCategorie(categorie);
     }
 
-    // Handle image upload if a file is provided
     if (imageFile != null && !imageFile.isEmpty()) {
       try {
         String fileName = saveImageFile(imageFile);
@@ -166,20 +210,25 @@ public class ProduitController {
     }
   }
 
+  /**
+   * Redirection vers le dashboard admin.
+   * 
+   * @return Redirection URL.
+   */
   @GetMapping("/")
   public String home() {
     return "redirect:/admin/dashboard";
   }
 
-  // Method to save uploaded image
+  /**
+   * Sauvegarde un fichier image sur le disque avec un nom unique.
+   */
   private String saveImageFile(MultipartFile file) throws IOException {
-    // Create the directory if it does not exist
     Path uploadPath = Paths.get(UPLOAD_DIR);
     if (!Files.exists(uploadPath)) {
       Files.createDirectories(uploadPath);
     }
 
-    // Generate a unique file name
     String originalFileName = file.getOriginalFilename();
     String extension = "";
     if (originalFileName != null && originalFileName.contains(".")) {
@@ -187,7 +236,6 @@ public class ProduitController {
     }
     String fileName = UUID.randomUUID().toString() + extension;
 
-    // Save the file
     Path filePath = uploadPath.resolve(fileName);
     Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 

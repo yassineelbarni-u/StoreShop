@@ -27,6 +27,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+/**
+ * Tests unitaires pour {@link CategorieServiceImpl}.
+ * Vérifie les opérations CRUD et les validations métiers sur les catégories.
+ */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Tests du Service CategorieServiceImpl")
 class CategorieServiceImplTest {
@@ -38,12 +42,18 @@ class CategorieServiceImplTest {
   private Categorie categorie1;
   private Categorie categorie2;
 
+  /**
+   * Initialisation des catégories de test.
+   */
   @BeforeEach
   void setUp() {
     categorie1 = new Categorie(1L, null, "Electronique");
     categorie2 = new Categorie(2L, null, "Informatique");
   }
 
+  /**
+   * Vérifie la récupération de toutes les catégories.
+   */
   @Test
   @DisplayName("getAllCategories - Retourne toutes les catégories")
   void testGetAllCategories() {
@@ -57,6 +67,9 @@ class CategorieServiceImplTest {
     verify(categorieRepository).findAll();
   }
 
+  /**
+   * Vérifie le comportement quand aucune catégorie n'existe.
+   */
   @Test
   @DisplayName("getAllCategories - Retourne une liste vide")
   void testGetAllCategories_Empty() {
@@ -67,6 +80,9 @@ class CategorieServiceImplTest {
     assertTrue(result.isEmpty());
   }
 
+  /**
+   * Vérifie la récupération d'une catégorie par son ID.
+   */
   @Test
   @DisplayName("getCategorieById - Retourne la catégorie trouvée")
   void testGetCategorieById_Found() {
@@ -79,6 +95,9 @@ class CategorieServiceImplTest {
     assertEquals(1L, result.getId());
   }
 
+  /**
+   * Vérifie qu'une exception est levée si la catégorie n'existe pas.
+   */
   @Test
   @DisplayName("getCategorieById - Lève une exception si non trouvée")
   void testGetCategorieById_NotFound() {
@@ -90,6 +109,9 @@ class CategorieServiceImplTest {
     assertTrue(exception.getMessage().contains("Catégorie non trouvée"));
   }
 
+  /**
+   * Vérifie la sauvegarde réussie d'une catégorie.
+   */
   @Test
   @DisplayName("saveCategorie - Sauvegarde réussie d'une nouvelle catégorie")
   void testSaveCategorie_Success() {
@@ -106,6 +128,9 @@ class CategorieServiceImplTest {
     verify(categorieRepository).save(newCategorie);
   }
 
+  /**
+   * Vérifie la validation du nom vide lors de la sauvegarde.
+   */
   @Test
   @DisplayName("saveCategorie - Échec si le nom est vide")
   void testSaveCategorie_EmptyName() {
@@ -119,6 +144,9 @@ class CategorieServiceImplTest {
     verify(categorieRepository, never()).save(any());
   }
 
+  /**
+   * Vérifie la validation du nom null lors de la sauvegarde.
+   */
   @Test
   @DisplayName("saveCategorie - Échec si le nom est null")
   void testSaveCategorie_NullName() {
@@ -131,6 +159,9 @@ class CategorieServiceImplTest {
     assertEquals("Le nom de la catégorie ne peut pas être vide", exception.getMessage());
   }
 
+  /**
+   * Vérifie l'interdiction des doublons de noms pour les nouvelles catégories.
+   */
   @Test
   @DisplayName("saveCategorie - Échec si une catégorie avec le même nom existe")
   void testSaveCategorie_DuplicateName() {
@@ -144,6 +175,9 @@ class CategorieServiceImplTest {
     verify(categorieRepository, never()).save(any());
   }
 
+  /**
+   * Vérifie qu'on peut modifier une catégorie existante sans déclencher l'erreur de doublon.
+   */
   @Test
   @DisplayName(
       "saveCategorie - Modification d'une catégorie existante (pas de vérification doublon)")
@@ -159,6 +193,9 @@ class CategorieServiceImplTest {
     verify(categorieRepository).save(updated);
   }
 
+  /**
+   * Vérifie la suppression d'une catégorie.
+   */
   @Test
   @DisplayName("deleteCategorie - Suppression réussie")
   void testDeleteCategorie_Success() {
@@ -170,6 +207,9 @@ class CategorieServiceImplTest {
     verify(categorieRepository).deleteById(1L);
   }
 
+  /**
+   * Vérifie qu'on ne peut pas supprimer une catégorie qui n'existe pas.
+   */
   @Test
   @DisplayName("deleteCategorie - Échec si la catégorie n'existe pas")
   void testDeleteCategorie_NotFound() {
@@ -182,6 +222,9 @@ class CategorieServiceImplTest {
     verify(categorieRepository, never()).deleteById(any());
   }
 
+  /**
+   * Vérifie la vérification d'existence par nom (cas positif).
+   */
   @Test
   @DisplayName("categorieExists - Retourne true si la catégorie existe")
   void testCategorieExists_True() {
@@ -190,6 +233,9 @@ class CategorieServiceImplTest {
     assertTrue(categorieService.categorieExists("Electronique"));
   }
 
+  /**
+   * Vérifie la vérification d'existence par nom (cas négatif).
+   */
   @Test
   @DisplayName("categorieExists - Retourne false si la catégorie n'existe pas")
   void testCategorieExists_False() {

@@ -25,6 +25,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
 
+/**
+ * Tests unitaires pour {@link CartController}.
+ * Valide les opérations sur le panier : affichage, ajout, mise à jour et suppression d'articles.
+ */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Tests du Controller CartController")
 class CartControllerTest {
@@ -41,6 +45,9 @@ class CartControllerTest {
   private CartLine cartLine2;
   private Produit produit1;
 
+  /**
+   * Initialisation des objets de test (produits, lignes de panier).
+   */
   @BeforeEach
   void setUp() {
     mockMvc = MockMvcBuilders.standaloneSetup(cartController).build();
@@ -66,6 +73,9 @@ class CartControllerTest {
     cartLine2 = new CartLine(produit2, 1, 1200.0);
   }
 
+  /**
+   * Teste l'affichage dynamique du panier.
+   */
   @Test
   @DisplayName("viewCart - retourne la vue panier avec les lignes et le total")
   void testViewCart() {
@@ -81,6 +91,11 @@ class CartControllerTest {
     verify(model).addAttribute("total", 2800.0);
   }
 
+  /**
+   * Teste l'accès au panier via MockMvc.
+   * 
+   * @throws Exception En cas d'erreur MockMvc.
+   */
   @Test
   @DisplayName("viewCart - avec MockMvc retourne status 200")
   void testViewCart_MockMvc() throws Exception {
@@ -95,6 +110,9 @@ class CartControllerTest {
         .andExpect(view().name("public/panier"));
   }
 
+  /**
+   * Teste l'affichage d'un panier vide.
+   */
   @Test
   @DisplayName("viewCart - panier vide retourne total 0")
   void testViewCart_EmptyCart() {
@@ -108,6 +126,9 @@ class CartControllerTest {
     verify(model).addAttribute("total", 0.0);
   }
 
+  /**
+   * Teste l'ajout d'un article et la redirection par défaut vers le panier.
+   */
   @Test
   @DisplayName("addItem - ajoute un produit et redirige vers le panier")
   void testAddItem_RedirectToCart() {
@@ -119,6 +140,9 @@ class CartControllerTest {
     verify(cartService).addItem(session, 1L, 2);
   }
 
+  /**
+   * Teste l'ajout d'un article avec une URL de retour personnalisée.
+   */
   @Test
   @DisplayName("addItem - redirige vers returnUrl si valide")
   void testAddItem_RedirectToReturnUrl() {
@@ -129,6 +153,9 @@ class CartControllerTest {
     assertEquals("redirect:/produits/detail?id=1", redirect);
   }
 
+  /**
+   * Teste la sécurité contre les redirections externes.
+   */
   @Test
   @DisplayName("addItem - ignore returnUrl externe (non relatif)")
   void testAddItem_IgnoresExternalReturnUrl() {
@@ -139,6 +166,11 @@ class CartControllerTest {
     assertEquals("redirect:/panier", redirect);
   }
 
+  /**
+   * Teste l'ajout via POST avec MockMvc.
+   * 
+   * @throws Exception En cas d'erreur MockMvc.
+   */
   @Test
   @DisplayName("addItem - avec MockMvc redirige après POST")
   void testAddItem_MockMvc() throws Exception {

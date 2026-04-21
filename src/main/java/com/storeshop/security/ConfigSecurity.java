@@ -10,6 +10,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
+/**
+ * Configuration de la sécurité de l'application.
+ * Définit les règles d'accès, la gestion du formulaire de login, du logout et la redirection après authentification.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
@@ -18,6 +22,13 @@ public class ConfigSecurity {
 
   private final UserDetailsServiceImpl userDetailsServiceImpl;
 
+  /**
+   * Définit le succès de l'authentification.
+   * Redirige vers le dashboard si l'utilisateur est un administrateur, 
+   * sinon vers la page d'accueil publique.
+   * 
+   * @return L'instance de AuthenticationSuccessHandler.
+   */
   @Bean
   public AuthenticationSuccessHandler authenticationSuccessHandler() {
     return (request, response, authentication) -> {
@@ -29,6 +40,17 @@ public class ConfigSecurity {
     };
   }
 
+  /**
+   * Configuration de la chaîne de filtres de sécurité.
+   * - Formulaire de login personnalisé.
+   * - Gestion de la session et des cookies au logout.
+   * - Définition des accès aux ressources statiques et aux URLs sensibles.
+   * 
+   * @param httpSecurity                 Entrée de configuration de sécurité.
+   * @param authenticationSuccessHandler Handler de succès de login.
+   * @return L'instance SecurityFilterChain configurée.
+   * @throws Exception En cas d'erreur de configuration.
+   */
   @Bean
   public SecurityFilterChain securityFilterChain(
       HttpSecurity httpSecurity, AuthenticationSuccessHandler authenticationSuccessHandler)

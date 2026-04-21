@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriUtils;
 
+/**
+ * Contrôleur pour la partie publique du site.
+ * Gère l'affichage des produits, l'inscription des utilisateurs et la consultation des détails produits.
+ */
 @Controller
 @AllArgsConstructor
 public class PublicController {
@@ -22,6 +26,16 @@ public class PublicController {
   private final CategorieService categorieService;
   private final AccountService accountService;
 
+  /**
+   * Page d'accueil affichant la liste des produits avec filtres.
+   * 
+   * @param model       Le modèle pour la vue.
+   * @param page        Index de la page.
+   * @param size        Nombre de produits par page.
+   * @param search      Critère de recherche par nom.
+   * @param categorieId Filtre par catégorie.
+   * @return Le nom de la vue d'accueil.
+   */
   @GetMapping({"/", "/home", "/produits"})
   public String home(
       Model model,
@@ -41,17 +55,38 @@ public class PublicController {
     return "public/home";
   }
 
+  /**
+   * Affiche les détails d'un produit spécifique.
+   * 
+   * @param id    L'ID du produit.
+   * @param model Le modèle pour la vue.
+   * @return La vue de détail du produit.
+   */
   @GetMapping("/produits/detail")
   public String showProduitDetail(@RequestParam(name = "id") Long id, Model model) {
     model.addAttribute("produit", produitService.getProduitById(id));
     return "public/detail-produit";
   }
 
+  /**
+   * Affiche le formulaire d'inscription.
+   * 
+   * @return La vue d'inscription.
+   */
   @GetMapping("/register")
   public String showRegisterForm() {
     return "public/register";
   }
 
+  /**
+   * Traite la demande d'inscription d'un nouvel utilisateur.
+   * 
+   * @param username        Nom d'utilisateur.
+   * @param email           Email.
+   * @param password        Mot de passe.
+   * @param confirmPassword Confirmation du mot de passe.
+   * @return Redirection vers login ou retour au formulaire avec erreur.
+   */
   @PostMapping("/register")
   public String register(
       @RequestParam String username,
@@ -71,6 +106,12 @@ public class PublicController {
     }
   }
 
+  /**
+   * Utilitaire pour encoder les paramètres d'URL.
+   * 
+   * @param value La valeur à encoder.
+   * @return La valeur encodée en UTF-8.
+   */
   private String encode(String value) {
     return UriUtils.encode(value == null ? "" : value, StandardCharsets.UTF_8);
   }

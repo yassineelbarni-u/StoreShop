@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+/**
+ * Contrôleur gérant les commandes coté client.
+ * Permet de lister l'historique des commandes et de finaliser un achat (checkout).
+ */
 @Controller
 @RequestMapping("/commandes")
 @AllArgsConstructor
@@ -23,6 +27,13 @@ public class OrderController {
   private final CommandeService commandeService;
   private final CartService cartService;
 
+  /**
+   * Liste les commandes de l'utilisateur connecté.
+   * 
+   * @param model     Le modèle pour la vue.
+   * @param principal L'objet d'authentification de l'utilisateur.
+   * @return Le nom de la vue de l'historique des commandes.
+   */
   @GetMapping
   public String listOrders(Model model, Principal principal) {
     if (principal == null) {
@@ -33,6 +44,13 @@ public class OrderController {
     return "public/commandes";
   }
 
+  /**
+   * Finalise la commande à partir du contenu du panier.
+   * 
+   * @param session   La session HTTP.
+   * @param principal L'objet d'authentification de l'utilisateur.
+   * @return Redirection vers l'historique des commandes ou le panier en cas d'erreur.
+   */
   @PostMapping("/checkout")
   public String checkout(HttpSession session, Principal principal) {
     if (principal == null) {

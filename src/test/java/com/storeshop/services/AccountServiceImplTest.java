@@ -22,6 +22,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+/**
+ * Tests unitaires pour {@link AccountServiceImpl}.
+ * Vérifie la logique de création d'utilisateurs, le hachage des mots de passe et la gestion des doublons.
+ */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Tests du Service AccountServiceImpl")
 class AccountServiceImplTest {
@@ -34,6 +38,9 @@ class AccountServiceImplTest {
 
   private User testUser;
 
+  /**
+   * Initialisation d'un utilisateur de test.
+   */
   @BeforeEach
   void setUp() {
     testUser =
@@ -46,6 +53,9 @@ class AccountServiceImplTest {
             .build();
   }
 
+  /**
+   * Teste la création réussie d'un nouveau compte client.
+   */
   @Test
   void testAddUser_Success() {
     when(appUserRepository.findByUsername("newuser")).thenReturn(null);
@@ -61,6 +71,9 @@ class AccountServiceImplTest {
     verify(appUserRepository).save(any(User.class));
   }
 
+  /**
+   * Teste le rejet d'une inscription si le nom d'utilisateur est déjà pris.
+   */
   @Test
   void testAddUser_UserAlreadyExists() {
     when(appUserRepository.findByUsername("testuser")).thenReturn(testUser);
@@ -74,6 +87,9 @@ class AccountServiceImplTest {
     verify(appUserRepository, never()).save(any());
   }
 
+  /**
+   * Teste le rejet d'une inscription si les mots de passe ne correspondent pas.
+   */
   @Test
   void testAddUser_PasswordsDoNotMatch() {
     when(appUserRepository.findByUsername("newuser")).thenReturn(null);
@@ -87,6 +103,9 @@ class AccountServiceImplTest {
     verify(appUserRepository, never()).save(any());
   }
 
+  /**
+   * Teste la création automatique d'un utilisateur s'il n'existe pas (ensureUserExists).
+   */
   @Test
   void testEnsureUserExists_CreatesUser() {
     when(appUserRepository.findByUsername("newuser")).thenReturn(null);
@@ -100,6 +119,9 @@ class AccountServiceImplTest {
     verify(appUserRepository).save(any(User.class));
   }
 
+  /**
+   * Teste que ensureUserExists retourne l'utilisateur existant s'il est trouvé.
+   */
   @Test
   void testEnsureUserExists_ReturnsExisting() {
     when(appUserRepository.findByUsername("testuser")).thenReturn(testUser);
@@ -110,6 +132,9 @@ class AccountServiceImplTest {
     verify(appUserRepository, never()).save(any());
   }
 
+  /**
+   * Teste la recherche d'un utilisateur par son nom.
+   */
   @Test
   void testLoadUserByUsername_Found() {
     when(appUserRepository.findByUsername("testuser")).thenReturn(testUser);
@@ -120,6 +145,9 @@ class AccountServiceImplTest {
     assertEquals("testuser", result.getUsername());
   }
 
+  /**
+   * Teste le cas où l'utilisateur recherché n'existe pas.
+   */
   @Test
   void testLoadUserByUsername_NotFound() {
     when(appUserRepository.findByUsername("unknown")).thenReturn(null);

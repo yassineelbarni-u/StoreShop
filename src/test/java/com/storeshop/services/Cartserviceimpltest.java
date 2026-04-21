@@ -18,6 +18,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+/**
+ * Tests unitaires pour {@link CartServiceImpl}.
+ * Valide la gestion du panier en session : ajout, mise à jour, suppression et calculs totaux.
+ */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Tests du Service CartServiceImpl")
 class CartServiceImplTest {
@@ -31,6 +35,9 @@ class CartServiceImplTest {
   private Produit produit2;
   private Cart cart;
 
+  /**
+   * Initialisation des produits et du panier avant chaque test.
+   */
   @BeforeEach
   void setUp() {
     Categorie categorie = new Categorie(1L, null, "Electronique");
@@ -52,6 +59,9 @@ class CartServiceImplTest {
     cart = new Cart();
   }
 
+  /**
+   * Vérifie la création d'un panier si aucun n'est présent en session.
+   */
   @Test
   @DisplayName("getCart - crée un nouveau panier si session vide")
   void testGetCart_CreatesNewCart() {
@@ -63,6 +73,9 @@ class CartServiceImplTest {
     verify(session).setAttribute(eq("CART"), any(Cart.class));
   }
 
+  /**
+   * Vérifie la récupération d'un panier existant.
+   */
   @Test
   @DisplayName("getCart - retourne le panier existant depuis la session")
   void testGetCart_ReturnsExistingCart() {
@@ -74,6 +87,9 @@ class CartServiceImplTest {
     verify(session, never()).setAttribute(any(), any());
   }
 
+  /**
+   * Vérifie l'ajout d'un article.
+   */
   @Test
   @DisplayName("addItem - ajoute un produit au panier")
   void testAddItem() {
@@ -84,6 +100,9 @@ class CartServiceImplTest {
     assertEquals(2, cart.getItems().get(1L));
   }
 
+  /**
+   * Vérifie l'accumulation des quantités pour un même article.
+   */
   @Test
   @DisplayName("addItem - accumule la quantité si produit déjà présent")
   void testAddItem_AccumulatesQuantity() {
@@ -95,6 +114,9 @@ class CartServiceImplTest {
     assertEquals(5, cart.getItems().get(1L));
   }
 
+  /**
+   * Vérifie la mise à jour forcée d'une quantité.
+   */
   @Test
   @DisplayName("updateItem - met à jour la quantité d'un produit")
   void testUpdateItem() {
@@ -106,6 +128,9 @@ class CartServiceImplTest {
     assertEquals(5, cart.getItems().get(1L));
   }
 
+  /**
+   * Vérifie la suppression d'un article.
+   */
   @Test
   @DisplayName("removeItem - supprime un produit du panier")
   void testRemoveItem() {
@@ -119,6 +144,9 @@ class CartServiceImplTest {
     assertTrue(cart.getItems().containsKey(2L));
   }
 
+  /**
+   * Vérifie la vidange du panier.
+   */
   @Test
   @DisplayName("clear - vide le panier")
   void testClear() {
@@ -131,6 +159,9 @@ class CartServiceImplTest {
     assertTrue(cart.getItems().isEmpty());
   }
 
+  /**
+   * Vérifie le calcul total des quantités d'articles.
+   */
   @Test
   @DisplayName("getTotalQuantity - calcule la quantité totale")
   void testGetTotalQuantity() {
@@ -143,6 +174,9 @@ class CartServiceImplTest {
     assertEquals(5, total);
   }
 
+  /**
+   * Vérifie le calcul d'un panier vide.
+   */
   @Test
   @DisplayName("getTotalQuantity - retourne 0 si panier vide")
   void testGetTotalQuantity_EmptyCart() {
@@ -153,6 +187,9 @@ class CartServiceImplTest {
     assertEquals(0, total);
   }
 
+  /**
+   * Vérifie la construction des lignes détaillées du panier (CartLine).
+   */
   @Test
   @DisplayName("buildLines - construit les lignes du panier avec prix et total")
   void testBuildLines() {
@@ -173,6 +210,9 @@ class CartServiceImplTest {
     assertEquals(1600.0, totalLine1, 0.01);
   }
 
+  /**
+   * Vérifie que buildLines retourne une liste vide pour un panier vide.
+   */
   @Test
   @DisplayName("buildLines - retourne liste vide si panier vide")
   void testBuildLines_EmptyCart() {
@@ -180,6 +220,9 @@ class CartServiceImplTest {
     assertTrue(lines.isEmpty());
   }
 
+  /**
+   * Vérifie le calcul du montant total du panier.
+   */
   @Test
   @DisplayName("computeTotal - calcule le total du panier")
   void testComputeTotal() {
@@ -194,6 +237,9 @@ class CartServiceImplTest {
     assertEquals(2800.0, total, 0.01);
   }
 
+  /**
+   * Vérifie que le total est 0 pour une liste de lignes vide.
+   */
   @Test
   @DisplayName("computeTotal - retourne 0 pour une liste vide")
   void testComputeTotal_EmptyList() {

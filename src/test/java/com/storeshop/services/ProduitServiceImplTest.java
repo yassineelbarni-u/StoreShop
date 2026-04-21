@@ -31,6 +31,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
+/**
+ * Tests unitaires pour {@link ProduitServiceImpl}.
+ * Valide la recherche paginée, les opérations CRUD et les validations métiers sur les produits.
+ */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Tests du Service ProduitServiceImpl")
 class ProduitServiceImplTest {
@@ -43,6 +47,9 @@ class ProduitServiceImplTest {
   private Produit produit2;
   private Categorie categorie;
 
+  /**
+   * Initialisation des données de test avant chaque test.
+   */
   @BeforeEach
   void setUp() {
     categorie = new Categorie(1L, null, "Electronique");
@@ -64,8 +71,11 @@ class ProduitServiceImplTest {
     produit2.setStock(5);
   }
 
+  /**
+   * Vérifie la recherche paginée par mot-clé.
+   */
   @Test
-  @DisplayName("searchProduits ")
+  @DisplayName("searchProduits - Retourne une page de produits")
   void testSearchProduits() {
     List<Produit> produits = Arrays.asList(produit1, produit2);
     Page<Produit> expectedPage = new PageImpl<>(produits);
@@ -78,8 +88,11 @@ class ProduitServiceImplTest {
     verify(produitRepository).searchProduits(eq("Smart"), any(PageRequest.class));
   }
 
+  /**
+   * Vérifie la recherche quand aucun produit ne correspond au mot-clé.
+   */
   @Test
-  @DisplayName("searchProduits ")
+  @DisplayName("searchProduits - Retourne une page vide si aucun résultat")
   void testSearchProduits_Empty() {
     Page<Produit> emptyPage = new PageImpl<>(List.of());
     when(produitRepository.searchProduits(eq("xyz"), any(PageRequest.class))).thenReturn(emptyPage);
@@ -89,8 +102,11 @@ class ProduitServiceImplTest {
     assertTrue(result.getContent().isEmpty());
   }
 
+  /**
+   * Vérifie la récupération d'un produit par son ID.
+   */
   @Test
-  @DisplayName("getProduitById ")
+  @DisplayName("getProduitById - Retourne le produit trouvé")
   void testGetProduitById_Found() {
     when(produitRepository.findById(1L)).thenReturn(Optional.of(produit1));
 
@@ -101,8 +117,11 @@ class ProduitServiceImplTest {
     assertEquals(599.99, result.getPrice());
   }
 
+  /**
+   * Vérifie qu'une exception est levée si le produit n'existe pas.
+   */
   @Test
-  @DisplayName("getProduitById ")
+  @DisplayName("getProduitById - Lève une exception si non trouvé")
   void testGetProduitById_NotFound() {
     when(produitRepository.findById(99L)).thenReturn(Optional.empty());
 
@@ -112,6 +131,9 @@ class ProduitServiceImplTest {
     assertTrue(exception.getMessage().contains("Produit non trouve"));
   }
 
+  /**
+   * Vérifie la sauvegarde réussie d'un produit.
+   */
   @Test
   @DisplayName("saveProduit - Sauvegarde reussie")
   void testSaveProduit_Success() {
@@ -124,6 +146,9 @@ class ProduitServiceImplTest {
     verify(produitRepository).save(produit1);
   }
 
+  /**
+   * Vérifie la validation métier interdisant un nom de produit vide.
+   */
   @Test
   @DisplayName("saveProduit - echec si le nom est vide")
   void testSaveProduit_EmptyName() {
@@ -139,6 +164,9 @@ class ProduitServiceImplTest {
     verify(produitRepository, never()).save(any());
   }
 
+  /**
+   * Vérifie la validation métier interdisant un nom de produit null.
+   */
   @Test
   @DisplayName("saveProduit - Échec si le nom est null")
   void testSaveProduit_NullName() {
@@ -153,6 +181,9 @@ class ProduitServiceImplTest {
     assertEquals("Le nom du produit ne peut pas etre vide", exception.getMessage());
   }
 
+  /**
+   * Vérifie la validation métier interdisant un prix négatif.
+   */
   @Test
   @DisplayName("saveProduit - Echec si le prix est negatif")
   void testSaveProduit_NegativePrice() {
@@ -167,6 +198,9 @@ class ProduitServiceImplTest {
     assertEquals("Le prix ne peut pas être negatif", exception.getMessage());
   }
 
+  /**
+   * Vérifie la validation métier interdisant un stock négatif.
+   */
   @Test
   @DisplayName("saveProduit - Echec si le stock est negatif")
   void testSaveProduit_NegativeStock() {
@@ -181,6 +215,9 @@ class ProduitServiceImplTest {
     assertEquals("Le stock ne peut pas etre negatif", exception.getMessage());
   }
 
+  /**
+   * Vérifie la suppression d'un produit.
+   */
   @Test
   @DisplayName("deleteProduit - Suppression reussie")
   void testDeleteProduit_Success() {
@@ -192,6 +229,9 @@ class ProduitServiceImplTest {
     verify(produitRepository).deleteById(1L);
   }
 
+  /**
+   * Vérifie qu'on ne peut pas supprimer un produit inexistant.
+   */
   @Test
   @DisplayName("deleteProduit - Echec si le produit n'existe pas")
   void testDeleteProduit_NotFound() {
@@ -204,6 +244,9 @@ class ProduitServiceImplTest {
     verify(produitRepository, never()).deleteById(any());
   }
 
+  /**
+   * Vérifie la vérification d'existence (cas positif).
+   */
   @Test
   @DisplayName("produitExists - Retourne true si le produit existe")
   void testProduitExists_True() {
@@ -212,6 +255,9 @@ class ProduitServiceImplTest {
     assertTrue(produitService.produitExists(1L));
   }
 
+  /**
+   * Vérifie la vérification d'existence (cas négatif).
+   */
   @Test
   @DisplayName("produitExists - Retourne false si le produit n'existe pas")
   void testProduitExists_False() {
